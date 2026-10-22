@@ -30,7 +30,10 @@ try {
       imagesBroken: [...document.images].filter(image => image.hasAttribute('src') && image.getAttribute('src') && image.complete && image.naturalWidth === 0).map(image => image.src),
       navPresent: !!document.querySelector('.brand-wordmark'),
       previewCards: document.querySelectorAll('.preview-card').length,
-      moduleFourPending: document.querySelector('[data-module-four-status]')?.textContent?.trim() === 'Em finalização',
+      moduleFourBuilt: document.querySelector('[data-module-four-status]')?.textContent?.trim() === '30 modelos criados no Canva',
+      moduleFourDeliveryPending: window.NQV_CONFIG?.PRODUCT_04_READY === false,
+      canvaLinksPublic: document.querySelectorAll('a[href*="canva.com"]').length,
+      moduleFourVisualPresent: !!document.querySelector('.preview-canva-kit .module-four-preview-art'),
       goalPresent: document.querySelector('#meta-10k')?.textContent?.includes('R$ 10.000'),
       heroBackground: getComputedStyle(document.querySelector('.hero-media')).backgroundImage,
       installmentText: document.querySelector('[data-installments-label]')?.textContent?.trim(),
@@ -42,8 +45,11 @@ try {
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
     assert.ok(state.headline.includes('R$ 10.000'), 'Headline missing renda extra');
     assert.ok(state.navPresent, 'Wordmark missing');
-    assert.equal(state.previewCards, 6, 'Missing preview cards');
-    assert.equal(state.moduleFourPending, true, 'Module 04 unexpectedly marked ready');
+    assert.equal(state.previewCards, 7, 'Missing Product 04 carousel preview');
+    assert.equal(state.moduleFourBuilt, true, 'Product 04 design inventory not reflected on site');
+    assert.equal(state.moduleFourDeliveryPending, true, 'Product 04 must remain gated until copy links are verified');
+    assert.equal(state.canvaLinksPublic, 0, 'Private Canva designs must not be publicly linked');
+    assert.equal(state.moduleFourVisualPresent, true, 'Product 04 visual showcase missing');
     assert.equal(state.goalPresent, true, 'Illustrative R$10K goal section missing');
     assert.ok(state.heroBackground.includes(width <= 640 ? 'mesa-mobile.webp' : 'mesa.webp'), 'Wrong responsive hero image at ' + width);
     assert.equal(state.installmentText, 'Em até 4x no cartão', 'Unverified installment amount published');
@@ -53,11 +59,11 @@ try {
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 6; i++) {
         await page.locator('[data-preview-next]').click();
         await page.waitForTimeout(260);
       }
-      assert.ok((await page.locator('[data-preview-count]').textContent()).includes('06 / 06'), 'Carousel did not reach its final preview');
+      assert.ok((await page.locator('[data-preview-count]').textContent()).includes('07 / 07'), 'Carousel did not reach its final preview');
       await page.locator('.preview-card [data-preview-zoom]').first().click();
       assert.equal(await page.locator('[data-preview-lightbox]').evaluate(el => el.open), true, 'Preview dialog not open');
       await page.locator('[data-lightbox-close]').click();
