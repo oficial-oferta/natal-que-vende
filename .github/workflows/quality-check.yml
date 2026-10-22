@@ -18,6 +18,11 @@ jobs:
         run: |
           node --check assets/js/app.js
           node --check assets/js/config.js
+          node --check portal/app.js
+          node --check portal/config.js
+          test -f portal/supabase/schema.sql
+          test -f portal/supabase/functions/cakto-webhook/index.ts
+          test -f portal/index.html
           test -f index.html
           test -f assets/images/logo-natal-que-vende-transparente.webp
           test -f assets/images/dashboard.webp
@@ -35,3 +40,5 @@ jobs:
           sleep 2
       - name: Run 7 mobile-desktop viewports and controls
         run: node tests/smoke.mjs
+      - name: Test members portal across 7 viewports
+        run: node tests/portal-smoke.mjs
