@@ -20,13 +20,13 @@ try{
     assert.equal(a.overflow,false,'Portal horizontal overflow: '+width);
     assert.deepEqual(a.missingImage,[],'Broken portal image: '+width);
     assert.equal(a.noAuth,true,'Login screen missing: '+width);
-    assert.equal(a.gateNotice,true,'Unconfigured portal must clearly explain blocked access: '+width);
+    assert.equal(a.gateNotice,false,'Configured portal should not show setup warning: '+width);
     assert.equal(a.protectedPortal,true,'Library must stay hidden without login: '+width);
-    assert.equal(a.loginDisabled,true,'Login must not accept passwords without backend: '+width);
+    assert.equal(a.loginDisabled,false,'Configured portal should enable Supabase sign-in: '+width);
     assert.equal(a.moduleCount,5,'Exactly five module containers expected: '+width);
     assert.equal(a.noPublicPaidLinks,true,'Do not publish editable files in frontend: '+width);
     assert.deepEqual(errors,[],'Browser errors: '+width);
-    console.log('PORTAL PASS '+width+'px: gated, responsive, five modules, no file leaks');
+    console.log('PORTAL PASS '+width+'px: connected login, no unauthenticated library, five modules, no file leaks');
     await page.close();
   }
 }finally{await browser.close()}
