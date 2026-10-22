@@ -1,0 +1,34 @@
+name: One-time mobile Lighthouse performance audit
+on:
+  push:
+    paths:
+      - .github/workflows/lighthouse-audit.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Lighthouse
+        run: npm install --no-save --no-audit --no-fund lighthouse
+      - name: Launch site
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/nqv-http.log 2>&1 &
+          sleep 2
+      - name: Audit simulated mobile connection
+        run: |
+          npx lighthouse http://127.0.0.1:8765/ --quiet --chrome-flags="--headless --no-sandbox" --output=json --output-path=/tmp/nqv-lighthouse.json --only-categories=performance,accessibility,best-practices,seo --form-factor=mobile --screenEmulation.mobile=true --screenEmulation.width=390 --screenEmulation.height=844
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const l = JSON.parse(fs.readFileSync('/tmp/nqv-lighthouse.json','utf8'));
+          const metrics = ['first-contentful-paint','largest-contentful-paint','speed-index','total-blocking-time','cumulative-layout-shift','server-response-time','total-byte-weight','unused-css-rules'];
+          console.log('SCORES '+JSON.stringify(Object.fromEntries(Object.entries(l.categories).map(([k,v])=>[k,Math.round(v.score*100)]))));
+          metrics.forEach(k=>console.log('METRIC '+k+' '+l.audits[k]?.displayValue));
+          for(const a of Object.values(l.audits)) if(a.details?.type==='opportunity'&&a.details?.overallSavingsMs>100) console.log('OPPORTUNITY '+a.title+' '+a.details.overallSavingsMs+'ms');
+          NODE
