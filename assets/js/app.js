@@ -238,7 +238,6 @@
     localStorage.setItem(consentKey, 'denied');
     if (cookieBanner) cookieBanner.hidden = true;
   });
-}
   // Large previews: accessible carousel with a full-size lightbox.
   const previewGallery = qs('[data-preview-gallery]');
   const previewCards = previewGallery ? qsa('.preview-card', previewGallery) : [];
