@@ -673,3 +673,70 @@ section[id] {scroll-margin-top:90px;}
   .hero-payment-line {font-size:.84rem;margin-top:15px;}
   .mobile-sticky small {font-size:.66rem;}
 }
+
+
+/* Product 04: abstract category showcase. These are NOT snapshots or public Canva links. */
+.module-four { background:linear-gradient(145deg,#fffdf6,#faf2e4); }
+.module-four-art { isolation:isolate;min-height:340px;background:radial-gradient(circle at 35% 25%,rgba(237,209,145,.26),transparent 45%),linear-gradient(148deg,#082f24,#185440); }
+.module-four-art::before { z-index:-1; }
+.canva-mini {position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;overflow:hidden;padding:15px 7px 9px;border:1px solid rgba(238,213,171,.85);box-shadow:0 18px 35px rgba(0,0,0,.3);color:#123e30;text-align:center;line-height:1.15;}
+.canva-mini--catalog{width:131px;height:190px;left:10px;top:72px;z-index:2;transform:rotate(-14deg);background:linear-gradient(165deg,#fbf3e2,#fffdf7);}
+.canva-mini--post{width:118px;height:157px;left:77px;top:62px;z-index:3;transform:rotate(10deg);background:linear-gradient(160deg,#8e2731,#5d1522);color:#fff3d9;}
+.canva-mini--story{width:72px;height:154px;left:145px;top:135px;z-index:1;transform:rotate(19deg);background:linear-gradient(160deg,#fff8e8,#dbcdac);}
+.canva-mini-brand{font:800 7px/1.2 ui-sans-serif,system-ui,sans-serif;letter-spacing:.12em;}
+.canva-mini-title{display:block;margin:10px 0 2px;font:700 20px/.94 Georgia,"Times New Roman",serif;letter-spacing:-.035em;}
+.canva-mini--story .canva-mini-title{font-size:13px;}
+.canva-mini--post .canva-mini-title{font-size:17px;}
+.canva-mini-rule{display:block;width:38px;height:1px;background:#be934e;margin:5px 0 6px;}
+.canva-mini-product{font:700 6px/1.35 ui-sans-serif,system-ui,sans-serif;}
+.canva-mini-ornament{font:normal 36px/1 Georgia,serif;color:#ead39d;margin:6px 0;}
+.canva-visual-disclaimer{position:absolute;left:8px;right:8px;bottom:16px;z-index:5;font:700 9px/1.3 ui-sans-serif,system-ui,sans-serif;color:#e3d8b8;text-align:center;letter-spacing:.04em;}
+.module-four .module-copy{padding:25px 27px;}
+.module-four .module-copy h3{font-size:clamp(1.6rem,2.65vw,2.06rem);}
+.module-four .module-copy p{font-size:.89rem;line-height:1.52;margin-bottom:12px;}
+.module-four .module-copy ul{gap:5px;}
+.module-four .module-copy li{font-size:.81rem;line-height:1.35;}
+.module-four .module-status-progress{background:#e1eee4;color:#245d40;letter-spacing:.035em;text-transform:none;font-size:.68rem;}
+.module-four .module-four-delivery-note{font-size:.71rem;color:#6e674b;margin:13px 0 0;border-top:1px solid #e9dbc4;padding-top:10px;}
+/* Full-width visual illustration in the marketing preview carousel. */
+.preview-card.preview-canva-kit {background:linear-gradient(145deg,#fffefd,#f6eedb);}
+.preview-canva-kit .module-four-preview-art {background:radial-gradient(circle at 50% 32%,#255440,#0e3228 78%);position:relative;isolation:isolate;overflow:hidden;min-height:490px;height:490px;}
+.preview-canva-doc{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:22px 12px 15px;overflow:hidden;text-align:center;border:2px solid rgba(238,215,158,.8);box-shadow:0 20px 34px rgba(0,0,0,.29);color:#123b2d;}
+.preview-canva-catalog{background:linear-gradient(150deg,#fdf4e2,#fffef9);left:8%;top:13%;width:37%;height:73%;transform:rotate(-8deg);z-index:2;}
+.preview-canva-post{background:linear-gradient(145deg,#8c252f,#5a1624);left:34%;top:10%;width:36%;height:73%;transform:rotate(5deg);z-index:3;color:#fff3db;}
+.preview-canva-story{background:linear-gradient(145deg,#fbf4e6,#ddcba6);left:64%;top:15%;width:26%;height:70%;transform:rotate(11deg);z-index:1;}
+.preview-canva-brand{font:850 clamp(.45rem,.9vw,.66rem)/1.15 ui-sans-serif,system-ui,sans-serif;letter-spacing:.13em;}
+.preview-canva-heading{font:700 clamp(1.25rem,2.9vw,2.1rem)/1 Georgia,"Times New Roman",serif;letter-spacing:-.03em;margin-top:29px;overflow-wrap:anywhere;}
+.preview-canva-story .preview-canva-heading{font-size:clamp(1rem,2vw,1.55rem);}
+.preview-canva-flourish{font:normal 28px/1.5 Georgia,serif;color:#be914d;margin:16px 0 9px;}
+.preview-canva-post .preview-canva-flourish{font-size:52px;color:#ecd7a3;}
+.preview-canva-details{font:600 .66rem/1.5 ui-sans-serif,system-ui,sans-serif;}
+.preview-canva-cta{font:800 clamp(.52rem,1vw,.8rem)/1.35 ui-sans-serif,system-ui,sans-serif;letter-spacing:.04em;margin-top:auto;margin-bottom:15px;border-top:1px solid currentColor;padding-top:8px;}
+.canva-visual-legend{position:absolute;z-index:5;bottom:8px;left:10px;right:10px;color:#fff2d6;text-align:center;font:650 10px/1.4 ui-sans-serif,system-ui,sans-serif;text-shadow:0 1px 8px #0f2f27;}
+.preview-canva-kit figcaption small{color:#7b8279;font-size:.76rem;line-height:1.4;}
+@media(max-width:860px){
+  .module-four-art{min-height:310px;}
+  .canva-mini--catalog{left:calc(50% - 145px);}
+  .canva-mini--post{left:calc(50% - 36px);}
+  .canva-mini--story{left:calc(50% + 63px);}
+}
+@media(max-width:640px){
+  .module-four-art{min-height:280px;}
+  .canva-mini--catalog{top:55px;left:calc(50% - 148px);}
+  .canva-mini--post{top:41px;left:calc(50% - 36px);}
+  .canva-mini--story{top:112px;left:calc(50% + 65px);}
+  .preview-canva-kit .module-four-preview-art{height:420px;min-height:420px;}
+  .preview-canva-doc{padding:18px 7px 12px;}
+  .preview-canva-heading{font-size:clamp(1.08rem,5vw,1.7rem);margin-top:18px;}
+  .preview-canva-story .preview-canva-heading{font-size:clamp(.86rem,3.4vw,1.25rem);}
+  .preview-canva-details{font-size:.5rem;}
+  .preview-canva-flourish{font-size:24px;margin:12px 0;}
+  .preview-canva-post .preview-canva-flourish{font-size:35px;}
+}
+@media(max-width:390px){
+  .preview-canva-kit .module-four-preview-art{height:360px;min-height:360px;}
+  .preview-canva-doc{padding:14px 5px 8px;}
+  .preview-canva-heading{font-size:1.03rem;margin-top:15px;}
+  .preview-canva-story .preview-canva-heading{font-size:.85rem;}
+  .preview-canva-cta{font-size:.45rem;}
+}
