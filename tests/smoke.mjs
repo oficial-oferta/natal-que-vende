@@ -13,7 +13,7 @@ try {
     const state = await page.evaluate(() => ({
       horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
       headline: document.querySelector('#hero-title')?.textContent || '',
-      imagesBroken: [...document.images].filter(image => image.complete && image.naturalWidth === 0).map(image => image.src),
+      imagesBroken: [...document.images].filter(image => image.hasAttribute('src') && image.getAttribute('src') && image.complete && image.naturalWidth === 0).map(image => image.src),
       navPresent: !!document.querySelector('.brand-wordmark'),
       previewCards: document.querySelectorAll('.preview-card').length,
       moduleFourPending: document.querySelector('[data-module-four-status]')?.textContent?.trim() === 'Em finalização'
