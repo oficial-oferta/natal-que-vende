@@ -68,8 +68,8 @@ values
    - `purchase_approved`
    - `refund`
    - `chargeback`
-3. Salve a **chave secreta do webhook**. Nunca a coloque no JavaScript, GitHub Pages ou num prompt público.
-4. Publique a Edge Function `cakto-webhook` usando a CLI Supabase:
+3. Escolha um webhook V1 ou V2 (ambos são tratados pelo receptor). Salve a **chave secreta do webhook**. Nunca a coloque no JavaScript, GitHub Pages ou num prompt público.
+4. A partir da raiz do repositório, entre na pasta do aplicativo (`cd portal`) e publique a Edge Function usando a CLI Supabase:
    `supabase functions deploy cakto-webhook --no-verify-jwt`
 5. Defina os segredos pela gestão de Edge Function Secrets, e nunca no repositório:
    - `CAKTO_WEBHOOK_SECRET` = chave de assinatura do webhook Cakto
@@ -80,6 +80,7 @@ values
 7. Faça um **evento de teste** sem compradores reais. Confira o payload para validar onde está o ID do produto. A função rejeita eventos sem ID de produto válido; não remova essa validação para contornar erros de configuração.
 8. Só depois teste compra aprovada de ponta a ponta, email de convite, cadastro da senha e acesso ao recurso privado.
 9. Confirme que eventos `refund` e `chargeback` interrompem acesso e que reenviar `purchase_approved` antigo não reativa uma compra reembolsada.
+10. **Falhas precisam de acompanhamento no Dashboard de Webhooks.** Segundo a documentação da Cakto, HTTP não-2xx respondido pelo seu servidor fica marcado como falha e **não gera reenvio automático**; retentativas automáticas ocorrem principalmente em falhas sem resposta ou timeout. Confira os alertas e reenvie manualmente os eventos que falharem. Para alto volume, implemente uma fila durável e monitoramento adicional antes do lançamento.
 
 ### Sobre o e-mail do comprador
 
