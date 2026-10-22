@@ -238,4 +238,82 @@
     localStorage.setItem(consentKey, 'denied');
     if (cookieBanner) cookieBanner.hidden = true;
   });
+}
+  // Large previews: accessible carousel with a full-size lightbox.
+  const previewGallery = qs('[data-preview-gallery]');
+  const previewCards = previewGallery ? qsa('.preview-card', previewGallery) : [];
+  const previewCount = qs('[data-preview-count]');
+  let previewIndex = 0;
+
+  function updatePreviewCounter() {
+    if (!previewGallery || !previewCards.length) return;
+    const galleryLeft = previewGallery.getBoundingClientRect().left;
+    let nearest = 0;
+    let closest = Infinity;
+    previewCards.forEach((card, index) => {
+      const distance = Math.abs(card.getBoundingClientRect().left - galleryLeft);
+      if (distance < closest) { closest = distance; nearest = index; }
+    });
+    previewIndex = nearest;
+    if (previewCount) previewCount.textContent =
+      String(nearest + 1).padStart(2, '0') + ' / ' + String(previewCards.length).padStart(2, '0');
+    const prev = qs('[data-preview-prev]');
+    const next = qs('[data-preview-next]');
+    if (prev) prev.disabled = nearest === 0;
+    if (next) next.disabled = nearest === previewCards.length - 1;
+  }
+
+  function jumpPreview(direction) {
+    if (!previewGallery || !previewCards.length) return;
+    const index = Math.max(0, Math.min(previewCards.length - 1, previewIndex + direction));
+    const card = previewCards[index];
+    const left = previewGallery.scrollLeft +
+      card.getBoundingClientRect().left - previewGallery.getBoundingClientRect().left;
+    previewGallery.scrollTo({ left, behavior: reduceMotion ? 'auto' : 'smooth' });
+    previewIndex = index;
+    if (previewCount) previewCount.textContent =
+      String(index + 1).padStart(2, '0') + ' / ' + String(previewCards.length).padStart(2, '0');
+  }
+  if (previewGallery) {
+    const prev = qs('[data-preview-prev]');
+    const next = qs('[data-preview-next]');
+    if (prev) prev.addEventListener('click', () => jumpPreview(-1));
+    if (next) next.addEventListener('click', () => jumpPreview(1));
+    let pendingScroll = false;
+    previewGallery.addEventListener('scroll', () => {
+      if (!pendingScroll) {
+        pendingScroll = true;
+        requestAnimationFrame(() => { pendingScroll = false; updatePreviewCounter(); });
+      }
+    }, { passive: true });
+    previewGallery.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') { e.preventDefault(); jumpPreview(1); }
+      if (e.key === 'ArrowLeft') { e.preventDefault(); jumpPreview(-1); }
+    });
+    updatePreviewCounter();
+  }
+
+  const lightbox = qs('[data-preview-lightbox]');
+  const lightboxImage = qs('[data-lightbox-image]');
+  const lightboxTitle = qs('[data-lightbox-title]');
+  qsa('[data-preview-zoom]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const src = btn.dataset.previewZoom || '';
+      if (!src.startsWith('assets/images/')) return;
+      if (!lightbox || typeof lightbox.showModal !== 'function') {
+        window.open(src, '_blank', 'noopener,noreferrer');
+        return;
+      }
+      lightboxImage.src = src;
+      lightboxImage.alt = btn.dataset.previewTitle || 'Prévia real ampliada';
+      lightboxTitle.textContent = btn.dataset.previewTitle || 'Prévia ampliada';
+      lightbox.showModal();
+    });
+  });
+  const lightboxClose = qs('[data-lightbox-close]');
+  if (lightboxClose) lightboxClose.addEventListener('click', () => lightbox.close());
+  if (lightbox) lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) lightbox.close();
+  });
+
 })();
