@@ -6,9 +6,11 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
 
 ## Decisão operacional — e-mails e custo mínimo (22/10/2026)
 
-**Escolha aprovada:** começar **sem comprar domínio**, usando uma **conta Gmail exclusiva para o Natal que Vende** como SMTP do Supabase para convites de primeiro acesso, links de entrada e recuperação de senha. Esta é uma solução **provisória, de baixo volume**, para testes e lançamento inicial; configurar autenticação em duas etapas e senha de aplicativo. Nunca registrar credenciais, senha de aplicativo nem tokens no GitHub.
+**Escolha aprovada:** começar **sem comprar domínio**, usando uma **conta Gmail exclusiva para o Natal que Vende** como SMTP do Supabase para convites de primeiro acesso, links de entrada e recuperação de senha.
 
-**Pendências para ativar:** usuário vai criar o Gmail dedicado e informar **somente o endereço**; configurar SMTP no Supabase; instalar os modelos HTML de e-mail existentes; testar recebimento, spam, convite, definição de senha e recuperação. Não conectar vendas reais sem testes concluídos.
+**Conta Gmail criada:** `acesso.natalquevende@gmail.com` (somente o endereço público, nenhuma credencial compartilhada). Remetente planejado: **Natal que Vende — Acesso**. Esta é uma solução **provisória, de baixo volume**, para testes e lançamento inicial; configurar autenticação em duas etapas e senha de aplicativo. Nunca registrar credenciais, senha de aplicativo nem tokens no GitHub.
+
+**Pendências para ativar:** habilitar verificação em duas etapas no Gmail criado, gerar senha de aplicativo, configurar SMTP no Supabase diretamente com a senha de aplicativo, instalar os modelos HTML de e-mail existentes e testar recebimento, spam, convite, definição de senha e recuperação. Não salvar ou compartilhar a senha de aplicativo no GitHub ou chat. Não conectar vendas reais sem testes concluídos.
 
 **LEMBRETE DE MIGRAÇÃO FUTURA — NÃO ESQUECER:** assim que a quantidade de vendas/e-mails crescer, **migrar do Gmail para um serviço transacional profissional (preferência inicial: Resend) com domínio próprio validado (SPF/DKIM)**. Revisar essa necessidade **antes de escalar anúncios** ou antes se ocorrerem atrasos, bloqueios, spam, falhas de entrega ou aproximação dos limites de envio. A troca deve preservar a conta Supabase, o acesso das compradoras e o portal já existente. Monitorar taxa de entrega, bounces e falhas.
 
@@ -51,6 +53,27 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
 7. Preencha **somente** os campos públicos do `portal/config.js`:
    - `SUPABASE_URL`
    - `SUPABASE_PUBLISHABLE_KEY` (chave pública, **nunca** secret / service_role)
+
+
+### Configuração Gmail SMTP (opção temporária, sem domínio próprio)
+
+No Gmail `acesso.natalquevende@gmail.com`, ative a **verificação em duas etapas** e gere a **senha de aplicativo** em https://myaccount.google.com/apppasswords (opção pode não estar disponível em determinadas contas). Faça isso **diretamente na conta Google**.
+
+No painel Supabase do projeto `dvpmypjeabbzfvdzalow`, em **Authentication → SMTP Settings**, configure:
+
+| Campo | Valor |
+| --- | --- |
+| Enable custom SMTP | Ativado |
+| Sender email | `acesso.natalquevende@gmail.com` |
+| Sender name | `Natal que Vende — Acesso` |
+| Host | `smtp.gmail.com` |
+| Port | `465` (SSL) ou `587` (STARTTLS) |
+| Username | `acesso.natalquevende@gmail.com` |
+| Password | **Senha de aplicativo** (16 caracteres, inserir exclusivamente no painel) |
+
+Depois confira **Authentication → URL Configuration**, com a URL do portal `https://oficial-oferta.github.io/natal-que-vende/portal/`, e instale os HTMLs preparados em **Authentication → Email Templates**.
+
+**Teste antes de ativar compras reais:** enviar um convite para endereço de teste autorizado, aceitar o link, criar senha, entrar e recuperar senha. Analisar mensagens de erro e limite de envio. Esta configuração **ainda não foi aplicada** no Supabase: requer a senha privada inserida pelo dono da conta no dashboard.
 
 ## 2. Arquivos privados
 
