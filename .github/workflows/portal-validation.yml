@@ -1,0 +1,22 @@
+name: Natal que Vende - Portal backend validation
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'portal/supabase/functions/**'
+      - 'portal/supabase/config.toml'
+      - '.github/workflows/portal-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deno-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Static-type-check Cakto integration
+        run: deno check portal/supabase/functions/cakto-webhook/index.ts
