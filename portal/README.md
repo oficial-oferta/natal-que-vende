@@ -34,6 +34,22 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
 
 **Ainda não está pronto para receber clientes até completar as etapas acima.** O Supabase já está conectado ao portal, mas convites e permissões comerciais dependem de SMTP configurado, credenciais reais da Cakto e testes ponta a ponta. Não existe "login de demonstração" que fure o acesso.
 
+## Verificação do SMTP Gmail — 22/10/2026
+
+Remetente configurado pelo proprietário: `acesso.natalquevende@gmail.com`. O projeto Supabase mostrou nos registros de autenticação que o limite de envio foi alterado de **2/h para 30/h**, compatível com habilitação de SMTP próprio. **Isso não equivale a um e-mail enviado com sucesso**; ainda não existe usuário de autenticação nem um convite entregue.
+
+### Teste controlado de primeiro acesso
+
+1. No painel Supabase, configure **Authentication → URL Configuration**:
+   - **Site URL:** `https://oficial-oferta.github.io/natal-que-vende/portal/`
+   - **Redirect URLs:** adicione esse mesmo endereço.
+2. Em **Authentication → Email Templates → Invite user**, personalize o assunto para `Seu acesso ao Natal que Vende chegou!` e cole o HTML salvo em `portal/supabase/email-templates/invite.html` (preservando `{{ .ConfirmationURL }}`). Faça o mesmo, quando conveniente, para `Recovery` e `Magic Link`.
+3. Em **Authentication → Users → Invite user**, convide `acesso.natalquevende@gmail.com` **uma única vez**. É uma conta de teste interna, não cliente pago. Não envie senha ao convidado: o convite cria fluxo de definição de senha.
+4. Abra a caixa de entrada do Gmail, inclusive spam, clique no convite e confirme se o portal exibe a definição de senha. Após entrar, **é esperado encontrar bloqueio da biblioteca** ("Estamos conferindo seu acesso"), porque não há compras aprovadas ainda; isso verifica a separação entre login e autorização.
+5. Depois do teste, verificar erros do Auth nos logs e somente então realizar um teste de compra com webhook Cakto. Não registrar pedidos falsos de clientes reais para forçar liberação.
+
+As telas administrativas de SMTP, URL Configuration e Email Templates não podem ser alteradas pelo conector Supabase atualmente disponível; o administrador faz isso diretamente no painel, sem compartilhar senhas de aplicativo ou tokens no chat.
+
 ## 1. Configurar Supabase
 
 1. Crie um projeto em https://supabase.com .
