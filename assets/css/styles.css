@@ -620,3 +620,15 @@ section[id] {scroll-margin-top:90px;}
   .hero h1 {font-size:2.02rem;letter-spacing:-.025em;}
   .goal-scenario>div {font-size:.79rem;}
 }
+
+
+/* Download the smaller Christmas hero on phones instead of the desktop photo.
+   Responsive preload links in index.html match these media breakpoints. */
+@media (max-width:640px) {
+  .hero-media { background-image:url('../images/mesa-mobile.webp'); transform:none; }
+}
+/* Simpler transitions on low-data connections and accessibility settings. */
+@media (prefers-reduced-motion:reduce) {
+  .mockup-card,.sparkle,.hero-glow { animation:none!important; }
+  .reveal { opacity:1!important;transform:none!important; }
+}
