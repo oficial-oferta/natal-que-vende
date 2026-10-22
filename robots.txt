@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+# Adicione o sitemap absoluto após definir o domínio final.
