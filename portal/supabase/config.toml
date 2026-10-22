@@ -1,0 +1,3 @@
+[functions.cakto-webhook]
+# Cakto envia o HMAC; não envia JWT Supabase.
+verify_jwt = false
