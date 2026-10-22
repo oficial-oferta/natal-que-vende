@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#093629">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Área exclusiva de membros do Natal que Vende. Acesse os cinco módulos digitais após a confirmação da compra.">
+  <title>Minha área | Natal que Vende</title>
+  <link rel="icon" href="../assets/images/favicon.png" type="image/png">
+  <link rel="preload" href="../assets/images/logo-natal-que-vende-v2.webp" as="image" type="image/webp">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./config.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#principal">Ir para o conteúdo</a>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="../" aria-label="Natal que Vende — página principal">
+        <img src="../assets/images/logo-natal-que-vende-v2.webp" alt="" width="62" height="62">
+        <span><strong>NATAL</strong><small>QUE VENDE</small></span>
+      </a>
+      <div class="topbar-actions"><span class="members-pill"><span aria-hidden="true">✦</span> Área exclusiva</span>
+        <button class="text-button" data-logout hidden type="button">Sair da conta</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="principal">
+    <section class="auth-section" id="auth-screen" aria-labelledby="auth-title">
+      <div class="container auth-layout">
+        <div class="auth-intro">
+          <span class="eyebrow"><span aria-hidden="true">✧</span> SUA JORNADA COMEÇA AQUI</span>
+          <h1 id="auth-title">Seu Natal começa com <em>um bom plano.</em></h1>
+          <p>Bem-vinda à sua área exclusiva do <strong>Natal que Vende</strong>. Entre com o e-mail utilizado na compra para consultar os materiais e colocar seu plano de encomendas em prática.</p>
+          <div class="benefits">
+            <div><span class="benefit-icon">01</span><span><strong>Aprenda</strong><small>Receitas e passo a passo</small></span></div>
+            <div><span class="benefit-icon">02</span><span><strong>Divulgue</strong><small>Estratégia e materiais comerciais</small></span></div>
+            <div><span class="benefit-icon">03</span><span><strong>Organize</strong><small>Pedidos, custos e pagamentos</small></span></div>
+          </div>
+        </div>
+        <div class="auth-panel-wrap">
+          <div class="auth-panel" id="auth-panel">
+            <div class="auth-head"><span class="lock-chip" aria-hidden="true">✦</span>
+              <span class="eyebrow">ACESSO AOS MÓDULOS</span>
+              <h2>Entre na sua conta</h2>
+              <p>Utilize o mesmo e-mail informado na compra.</p>
+            </div>
+            <div class="notice notice-warning" data-unconfigured hidden>
+              A área de membros está em preparação. O login será ativado após a conexão segura com a autenticação e o checkout. Nenhuma senha é aceita neste modo.
+            </div>
+            <form id="login-form" class="auth-form">
+              <label for="login-email">Seu e-mail</label>
+              <input id="login-email" name="email" type="email" placeholder="voce@exemplo.com" autocomplete="email" inputmode="email" required>
+              <label for="login-password">Sua senha</label>
+              <input id="login-password" name="password" type="password" placeholder="Digite sua senha" autocomplete="current-password" required minlength="8">
+              <button type="submit" class="primary-button" id="login-submit">Entrar na área de membros <span aria-hidden="true">→</span></button>
+            </form>
+            <button type="button" class="help-link" data-show-recovery>Esqueceu sua senha?</button>
+            <form id="recovery-form" class="auth-form" hidden>
+              <label for="recovery-email">E-mail utilizado na compra</label>
+              <input id="recovery-email" type="email" placeholder="voce@exemplo.com" autocomplete="email" required>
+              <button type="submit" class="primary-button">Enviar e-mail de recuperação</button>
+              <button type="button" class="help-link" data-back-login>Voltar ao login</button>
+            </form>
+            <p class="form-message" id="auth-message" role="status" aria-live="polite"></p>
+            <div class="auth-footnote">
+              <span aria-hidden="true">✧</span> Primeiro acesso? Após a compra aprovada, você receberá um convite para criar sua senha. Não é necessário fazer um cadastro público.
+            </div>
+          </div>
+          <div class="auth-decoration" aria-hidden="true">✧ <span>Seu grande próximo passo</span> ✧</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="portal-screen" hidden aria-labelledby="welcome-title">
+      <div class="member-hero">
+        <div class="container member-hero-inner">
+          <div><span class="eyebrow">BEM-VINDA À SUA ÁREA DE MEMBROS</span>
+            <h1 id="welcome-title">Prepare, divulgue e <em>venda com organização.</em></h1>
+            <p data-welcome-email>Seu conteúdo exclusivo em um só lugar.</p>
+          </div>
+          <div class="member-hero-mark" aria-hidden="true"><span>05</span><small>MÓDULOS</small></div>
+        </div>
+      </div>
+      <div class="container member-content">
+        <div class="notice notice-info" id="access-notice" role="status" aria-live="polite" hidden></div>
+        <section id="set-password-card" class="security-card" hidden aria-labelledby="password-title">
+          <div><span class="eyebrow">PRIMEIRO ACESSO / RECUPERAÇÃO</span>
+            <h2 id="password-title">Defina sua senha de acesso</h2>
+            <p>Escolha uma senha segura para entrar novamente quando quiser.</p></div>
+          <form id="set-password-form" class="inline-form">
+            <label for="new-password">Nova senha (mínimo de 10 caracteres)</label>
+            <input id="new-password" type="password" required minlength="10" autocomplete="new-password" placeholder="Sua nova senha">
+            <button class="primary-button" type="submit">Salvar minha senha</button>
+            <span class="form-message" id="set-password-message" role="status" aria-live="polite"></span>
+          </form>
+        </section>
+        <div id="access-denied" class="access-card" hidden>
+          <span class="access-symbol" aria-hidden="true">✧</span>
+          <h2>Estamos conferindo seu acesso</h2>
+          <p>Sua conta está autenticada, mas ainda não encontramos uma compra aprovada vinculada ao seu e-mail. Se acabou de pagar, atualize a página após a confirmação do pagamento.</p>
+          <button type="button" class="outline-button" data-check-again>Verificar meu acesso novamente</button>
+          <p class="caption">Caso a compra esteja aprovada e o acesso não apareça, contate o suporte informado no recibo da compra.</p>
+        </div>
+        <div id="member-library" hidden>
+          <div class="member-heading">
+            <div><span class="eyebrow">SUA BIBLIOTECA DIGITAL</span><h2>Meus materiais</h2>
+              <p>Escolha um módulo para visualizar os recursos disponíveis e estudar no seu ritmo.</p></div>
+            <span class="member-count" data-resource-count>5 módulos</span>
+          </div>
+          <div class="modules-grid" id="modules-grid">
+            <article class="module" data-module="1">
+              <div class="module-top"><span class="module-index">01</span><span class="module-type">GUIA INICIAL</span></div>
+              <div class="module-icon">✧</div>
+              <h3>Comece por Aqui</h3>
+              <p>Conheça o Método 5P e planeje seus primeiros passos.</p>
+              <div class="module-files" data-resources="1"></div>
+            </article>
+            <article class="module" data-module="2">
+              <div class="module-top"><span class="module-index">02</span><span class="module-type">RECEITAS</span></div>
+              <div class="module-icon">✿</div>
+              <h3>Os 5 Produtos de Natal</h3>
+              <p>Aprenda, teste, precifique e apresente seus doces natalinos.</p>
+              <div class="module-files" data-resources="2"></div>
+            </article>
+            <article class="module" data-module="3">
+              <div class="module-top"><span class="module-index">03</span><span class="module-type">VENDAS E ENCOMENDAS</span></div>
+              <div class="module-icon">✉</div>
+              <h3>O Segredo das Encomendas</h3>
+              <p>Organize divulgação, conversas e confirmações de pedido.</p>
+              <div class="module-files" data-resources="3"></div>
+            </article>
+            <article class="module" data-module="4">
+              <div class="module-top"><span class="module-index">04</span><span class="module-type">DESIGN EDITÁVEL</span></div>
+              <div class="module-icon">❖</div>
+              <h3>Kit Natal que Vende</h3>
+              <p>Cardápios, catálogo, posts, Stories, tags e orçamentos no Canva.</p>
+              <div class="module-files" data-resources="4"></div>
+            </article>
+            <article class="module" data-module="5">
+              <div class="module-top"><span class="module-index">05</span><span class="module-type">PLANILHA</span></div>
+              <div class="module-icon">▤</div>
+              <h3>Controle Seu Lucro</h3>
+              <p>Organize custos, encomendas, recebimentos e resultados.</p>
+              <div class="module-files" data-resources="5"></div>
+            </article>
+          </div>
+          <div class="bottom-advice"><strong>Uma dica para sua jornada</strong><p>Comece pelo Módulo 01, estude os produtos antes de produzir e use a planilha para acompanhar os custos. Uma meta de faturamento é planejamento, não resultado garantido.</p></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="container footer-inner"><span>© <span data-year></span> Natal que Vende</span><span>Seu grande dia de vendas começa com organização. ✧</span></div></footer>
+</body>
+</html>
