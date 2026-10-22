@@ -41,36 +41,11 @@ function productId(data: Record<string, any>): string {
   return typeof value === "string" || typeof value === "number" ? String(value) : "";
 }
 
-Deno.serve(async (req: Request) => {
-  if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
-  if (![secret, allowedProductId, portalUrl, supabaseUrl, adminKey].every(Boolean)) {
-    return json({ error: "not_configured" }, 503);
-  }
-  // A requisição chega do servidor da Cakto, não do navegador.
-  if (Number(req.headers.get("content-length") || 0) > 150000) {
-    return json({ error: "payload_too_large" }, 413);
-  }
-  const raw = await req.text();
-  if (raw.length > 150000) return json({ error: "payload_too_large" }, 413);
-  const good = await signatureValid(
-    raw, req.headers.get("X-Cakto-Timestamp") || "", req.headers.get("X-Cakto-Signature") || ""
-  );
-  if (!good) return json({ error: "invalid_signature" }, 401);
-
-  let payload: any;
-  try { payload = JSON.parse(raw); } catch { return json({ error: "invalid_json" }, 400); }
-  const event = String(payload.event || "");
-  if (!["purchase_approved", "refund", "chargeback"].includes(event)) {
-    return json({ status: "ignored" });
-  }
-  const data = payload.data;
+async function processOneOrder(data: any, event: string, admin: any): Promise<Response> {
   if (!data || typeof data !== "object") return json({ error: "missing_order" }, 422);
 
   const orderId = String(data.id || "");
   if (!orderId || orderId.length > 160) return json({ error: "missing_order_id" }, 422);
-  const admin = createClient(supabaseUrl, adminKey, {
-    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false }
-  });
 
   // Para refunds, a Cakto pode resumir o payload; recupere dados do pedido
   // previamente registrado, sem permitir produto de fora.
@@ -78,9 +53,8 @@ Deno.serve(async (req: Request) => {
     .select("email,product_id,invite_sent_at,status").eq("order_id", orderId).maybeSingle();
   const incomingProduct = productId(data);
   const currentProduct = incomingProduct || (event !== "purchase_approved" ? previous?.product_id : "");
-  if (!currentProduct || currentProduct !== allowedProductId) {
-    return json({ error: "unrecognized_product" }, 422);
-  }
+  if (currentProduct && currentProduct !== allowedProductId) return json({ status: "ignored_other_product" });
+  if (!currentProduct) return json({ error: "missing_product_id" }, 422);
   const email = String(data.customer?.email || previous?.email || "").trim().toLowerCase();
   if (!/^\S+@\S+\.\S+$/.test(email) || email.length > 320) {
     return json({ error: "invalid_customer_email" }, 422);
@@ -120,4 +94,41 @@ Deno.serve(async (req: Request) => {
     .update({ invite_sent_at: new Date().toISOString() }).eq("order_id", orderId);
   if (stampError) return json({ error: "invite_state_retry_required" }, 503);
   return json({ status: "access_granted" });
+}
+
+Deno.serve(async (req: Request) => {
+  if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
+  if (![secret, allowedProductId, portalUrl, supabaseUrl, adminKey].every(Boolean)) {
+    return json({ error: "not_configured" }, 503);
+  }
+  // A requisição chega do servidor da Cakto, não do navegador.
+  if (Number(req.headers.get("content-length") || 0) > 150000) {
+    return json({ error: "payload_too_large" }, 413);
+  }
+  const raw = await req.text();
+  if (raw.length > 150000) return json({ error: "payload_too_large" }, 413);
+  const good = await signatureValid(
+    raw, req.headers.get("X-Cakto-Timestamp") || "", req.headers.get("X-Cakto-Signature") || ""
+  );
+  if (!good) return json({ error: "invalid_signature" }, 401);
+
+  let payload: any;
+  try { payload = JSON.parse(raw); } catch { return json({ error: "invalid_json" }, 400); }
+  const event = String(payload.event || "");
+  if (!["purchase_approved", "refund", "chargeback"].includes(event)) {
+    return json({ status: "ignored" });
+  }
+  // Webhook V1 entrega um pedido; V2 pode entregar vários na mesma cobrança.
+  const items = Array.isArray(payload.data) ? payload.data : [payload.data];
+  if (!items.length || items.length > 30) return json({ error: "invalid_order_count" }, 422);
+  const admin = createClient(supabaseUrl, adminKey, {
+    auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false }
+  });
+  let processed = 0;
+  for (const data of items) {
+    const result = await processOneOrder(data, event, admin);
+    if (result.status >= 400) return result;
+    processed++;
+  }
+  return json({ status: "processed", orders: processed });
 });
