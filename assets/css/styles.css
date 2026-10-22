@@ -556,3 +556,7 @@ a { color: inherit; text-decoration: none; }
   .preview-card .preview-image-frame { height:360px; }
 }
 @media (prefers-reduced-motion:reduce) { .preview-gallery { scroll-behavior:auto; } }
+
+/* Allow the final preview to scroll fully into view on desktop and mobile. */
+.preview-gallery::after { content:""; flex:0 0 max(45%, 400px); }
+@media (max-width:640px) { .preview-gallery::after { flex-basis: 15%; } }
