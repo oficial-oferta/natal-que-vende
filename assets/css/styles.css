@@ -632,3 +632,44 @@ section[id] {scroll-margin-top:90px;}
   .mockup-card,.sparkle,.hero-glow { animation:none!important; }
   .reveal { opacity:1!important;transform:none!important; }
 }
+
+
+/* Offer payment hierarchy: installments first, full cash price immediately below.
+   A numerical installment quote is shown only after checkout confirmation. */
+.offer-box .offer-price {
+  margin-top:15px;
+  font-size:clamp(1.9rem,3.45vw,3.2rem);
+  line-height:1.09;
+  letter-spacing:-.04em;
+  color:var(--pine-900);
+  text-wrap:balance;
+}
+.offer-cash-price {
+  display:block;
+  margin-top:12px;
+  color:#496556;
+  font-size:clamp(1.05rem,2vw,1.28rem);
+  line-height:1.4;
+}
+.offer-cash-price strong {color:var(--pine-900);font-weight:900;font-size:1.25em;}
+.installment-disclosure {
+  color:#647268;
+  margin:11px 0 22px;
+  line-height:1.5;
+  font-size:.78rem;
+}
+.hero-payment-line {
+  font-size:.91rem;
+  font-weight:650;
+  color:var(--gold-300);
+  margin:19px 0 0;
+  line-height:1.55;
+}
+.hero-payment-line strong {color:#fff4d9;font-weight:850;}
+@media(max-width:640px){
+  .offer-box .offer-price {font-size:clamp(2rem,8vw,2.8rem);}
+  .offer-cash-price {font-size:1.02rem;margin-top:9px;}
+  .installment-disclosure {font-size:.75rem;margin-bottom:19px;}
+  .hero-payment-line {font-size:.84rem;margin-top:15px;}
+  .mobile-sticky small {font-size:.66rem;}
+}
