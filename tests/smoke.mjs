@@ -1,5 +1,19 @@
 import { chromium } from 'playwright-core';
 import assert from 'node:assert/strict';
+import { statSync } from 'node:fs';
+
+// Maintain predictable mobile download budgets after future marketing updates.
+for (const [path, limit] of [
+  ['assets/images/logo-natal-que-vende-v2.webp', 40000],
+  ['assets/images/mesa-mobile.webp', 135000],
+  ['assets/images/mesa.webp', 250000],
+  ['assets/css/styles.css', 65000],
+  ['assets/js/app.js', 25000],
+]) {
+  const bytes = statSync(path).size;
+  assert.ok(bytes <= limit, `Asset budget exceeded: ${path} (${bytes} > ${limit})`);
+  console.log(`ASSET BUDGET PASS: ${path} ${Math.round(bytes/1024)} KiB`);
+}
 
 const executablePath = process.env.CHROME_BIN || '/usr/bin/google-chrome';
 const browser = await chromium.launch({ executablePath, headless: true, args: ['--no-sandbox'] });
@@ -16,7 +30,9 @@ try {
       imagesBroken: [...document.images].filter(image => image.hasAttribute('src') && image.getAttribute('src') && image.complete && image.naturalWidth === 0).map(image => image.src),
       navPresent: !!document.querySelector('.brand-wordmark'),
       previewCards: document.querySelectorAll('.preview-card').length,
-      moduleFourPending: document.querySelector('[data-module-four-status]')?.textContent?.trim() === 'Em finalização'
+      moduleFourPending: document.querySelector('[data-module-four-status]')?.textContent?.trim() === 'Em finalização',
+      goalPresent: document.querySelector('#meta-10k')?.textContent?.includes('R$ 10.000'),
+      heroBackground: getComputedStyle(document.querySelector('.hero-media')).backgroundImage
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
@@ -24,6 +40,8 @@ try {
     assert.ok(state.navPresent, 'Wordmark missing');
     assert.equal(state.previewCards, 6, 'Missing preview cards');
     assert.equal(state.moduleFourPending, true, 'Module 04 unexpectedly marked ready');
+    assert.equal(state.goalPresent, true, 'Illustrative R$10K goal section missing');
+    assert.ok(state.heroBackground.includes(width <= 640 ? 'mesa-mobile.webp' : 'mesa.webp'), 'Wrong responsive hero image at ' + width);
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
