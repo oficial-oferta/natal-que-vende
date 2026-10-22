@@ -32,7 +32,11 @@ try {
       previewCards: document.querySelectorAll('.preview-card').length,
       moduleFourPending: document.querySelector('[data-module-four-status]')?.textContent?.trim() === 'Em finalização',
       goalPresent: document.querySelector('#meta-10k')?.textContent?.includes('R$ 10.000'),
-      heroBackground: getComputedStyle(document.querySelector('.hero-media')).backgroundImage
+      heroBackground: getComputedStyle(document.querySelector('.hero-media')).backgroundImage,
+      installmentText: document.querySelector('[data-installments-label]')?.textContent?.trim(),
+      cashText: document.querySelector('.offer-cash-price')?.textContent?.trim(),
+      stickyText: document.querySelector('[data-sticky-price]')?.textContent?.trim(),
+      installmentDisclosure: document.querySelector('[data-installments-note]')?.textContent?.trim()
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
@@ -42,6 +46,10 @@ try {
     assert.equal(state.moduleFourPending, true, 'Module 04 unexpectedly marked ready');
     assert.equal(state.goalPresent, true, 'Illustrative R$10K goal section missing');
     assert.ok(state.heroBackground.includes(width <= 640 ? 'mesa-mobile.webp' : 'mesa.webp'), 'Wrong responsive hero image at ' + width);
+    assert.equal(state.installmentText, 'Em até 4x no cartão', 'Unverified installment amount published');
+    assert.ok(state.cashText.includes('R$ 19,90'), 'Missing cash price');
+    assert.ok(state.stickyText.includes('R$ 19,90'), 'Missing mobile sticky cash price');
+    assert.ok(state.installmentDisclosure.includes('checkout'), 'Missing installment fee disclosure');
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
