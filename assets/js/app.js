@@ -23,8 +23,14 @@
       const value = params.get(key);
       if (value) utm[key] = value;
     });
-    if (Object.keys(utm).length) sessionStorage.setItem('nqv_utm', JSON.stringify(utm));
-    try { return JSON.parse(sessionStorage.getItem('nqv_utm') || '{}'); } catch { return {}; }
+    try {
+      if (Object.keys(utm).length) sessionStorage.setItem('nqv_utm', JSON.stringify(utm));
+      return JSON.parse(sessionStorage.getItem('nqv_utm') || '{}');
+    } catch {
+      // Private browsing and restrictive browser settings may block storage.
+      // Keep the current URL's campaign parameters without crashing navigation.
+      return utm;
+    }
   }
   const utmData = captureUtm();
 
