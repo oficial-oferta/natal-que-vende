@@ -4,6 +4,14 @@
 
 O GitHub Pages serve **somente a interface**. Login, validação do pagamento e downloads são administrados por **Supabase Auth, RLS, Storage privado e Edge Function**.
 
+## Decisão operacional — e-mails e custo mínimo (22/10/2026)
+
+**Escolha aprovada:** começar **sem comprar domínio**, usando uma **conta Gmail exclusiva para o Natal que Vende** como SMTP do Supabase para convites de primeiro acesso, links de entrada e recuperação de senha. Esta é uma solução **provisória, de baixo volume**, para testes e lançamento inicial; configurar autenticação em duas etapas e senha de aplicativo. Nunca registrar credenciais, senha de aplicativo nem tokens no GitHub.
+
+**Pendências para ativar:** usuário vai criar o Gmail dedicado e informar **somente o endereço**; configurar SMTP no Supabase; instalar os modelos HTML de e-mail existentes; testar recebimento, spam, convite, definição de senha e recuperação. Não conectar vendas reais sem testes concluídos.
+
+**LEMBRETE DE MIGRAÇÃO FUTURA — NÃO ESQUECER:** assim que a quantidade de vendas/e-mails crescer, **migrar do Gmail para um serviço transacional profissional (preferência inicial: Resend) com domínio próprio validado (SPF/DKIM)**. Revisar essa necessidade **antes de escalar anúncios** ou antes se ocorrerem atrasos, bloqueios, spam, falhas de entrega ou aproximação dos limites de envio. A troca deve preservar a conta Supabase, o acesso das compradoras e o portal já existente. Monitorar taxa de entrega, bounces e falhas.
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
@@ -11,17 +19,18 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
 - [x] Código para ler materiais autorizados e obter URLs assinadas de 60 segundos.
 - [x] Migração SQL com Row Level Security, recursos privados e acesso baseado em compras aprovadas.
 - [x] Edge Function de webhook Cakto com validação HMAC, proteção contra repetição e revogação por reembolso/chargeback.
-- [ ] Criar projeto Supabase e executar migração SQL.
-- [ ] Configurar credenciais **públicas** de Supabase em `portal/config.js`.
+- [x] Criar projeto Supabase em São Paulo e executar migração SQL.
+- [x] Configurar credenciais **públicas** de Supabase em `portal/config.js`.
 - [ ] Fazer upload dos arquivos pagos no bucket **privado** `natal-pago`.
 - [ ] Cadastrar recursos publicados em `public.resources`.
-- [ ] Publicar a função e armazenar os segredos fora do repositório.
+- [x] Publicar Edge Function receptora da Cakto no Supabase.
+- [ ] Configurar os segredos reais da Cakto no Supabase (sem expor no repositório).
 - [ ] Criar produto e checkout da Cakto; verificar campos de webhook real.
 - [ ] Testar Pix aprovado, cartão, reembolso, chargeback e convite para e-mail.
 - [ ] Configurar SMTP/limites de envio adequados antes de escalar.
 - [ ] Validar os 30 links oficiais de modelo Canva e inserir o **guia final** do Módulo 04.
 
-**Não está pronto para receber clientes até completar as etapas acima.** O portal não aceita senhas quando o Supabase não está configurado. Não existe "login de demonstração" que fure o acesso.
+**Ainda não está pronto para receber clientes até completar as etapas acima.** O Supabase já está conectado ao portal, mas convites e permissões comerciais dependem de SMTP configurado, credenciais reais da Cakto e testes ponta a ponta. Não existe "login de demonstração" que fure o acesso.
 
 ## 1. Configurar Supabase
 
