@@ -32,7 +32,13 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
    - Site URL: `https://oficial-oferta.github.io/natal-que-vende/portal/`
    - Redirect URL: `https://oficial-oferta.github.io/natal-que-vende/portal/`
 5. Ajuste a template de e-mail de **Invite user** com identidade Natal que Vende; convites Supabase permitem que a cliente escolha a própria senha.
-6. Configure provedor SMTP dedicado para enviar convites em produção; limites padrão podem ser baixos.
+6. Configure provedor SMTP dedicado para enviar convites em produção. Segundo a documentação atual do Supabase, o remetente padrão **só envia mensagens para endereços autorizados da equipe**; sem SMTP próprio, não é possível atender compradores reais.
+   - Já estão no GitHub os modelos de mensagem da marca Natal que Vende:
+     - `portal/supabase/email-templates/invite.html` → primeiro acesso e definição da senha;
+     - `portal/supabase/email-templates/magic_link.html` → cliente que já possui uma conta;
+     - `portal/supabase/email-templates/recovery.html` → recuperação de senha.
+   - Configure o remetente e as credenciais SMTP apenas no Dashboard, nunca no repositório. Em Authentication → Email Templates, utilize os templates e mantenha a variável `{{ .ConfirmationURL }}`.
+   - Faça teste de recebimento real (inclusive spam) e configure domínio com SPF/DKIM antes de ativar o checkout.
 7. Preencha **somente** os campos públicos do `portal/config.js`:
    - `SUPABASE_URL`
    - `SUPABASE_PUBLISHABLE_KEY` (chave pública, **nunca** secret / service_role)
