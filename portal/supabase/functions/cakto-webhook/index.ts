@@ -86,9 +86,16 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
     data: { origin: "cakto", product: "natal-que-vende" }
   });
   if (inviteError) {
-    // Conta já existente pode usar login/recuperação de senha.
+    // Uma cliente que já tem conta não recebe novo convite do Supabase.
+    // Para garantir que ela TAMBÉM receba acesso por e-mail, envie um
+    // link temporário de login sem criar conta adicional.
     const alreadyExists = /already|registered|exists|cadastrad|existente/i.test(inviteError.message || "");
     if (!alreadyExists) return json({ error: "invite_retry_required" }, 503);
+    const { error: existingEmailError } = await admin.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false, emailRedirectTo: portalUrl }
+    });
+    if (existingEmailError) return json({ error: "existing_user_email_retry_required" }, 503);
   }
   const { error: stampError } = await admin.from("access_orders")
     .update({ invite_sent_at: new Date().toISOString() }).eq("order_id", orderId);
