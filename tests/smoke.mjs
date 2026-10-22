@@ -20,7 +20,7 @@ try {
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
-    assert.ok(state.headline.includes('renda extra'), 'Headline missing renda extra');
+    assert.ok(state.headline.includes('R$ 10.000'), 'Headline missing renda extra');
     assert.ok(state.navPresent, 'Wordmark missing');
     assert.equal(state.previewCards, 6, 'Missing preview cards');
     assert.equal(state.moduleFourPending, true, 'Module 04 unexpectedly marked ready');
