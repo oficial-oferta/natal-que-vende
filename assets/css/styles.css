@@ -560,3 +560,63 @@ a { color: inherit; text-decoration: none; }
 /* Allow the final preview to scroll fully into view on desktop and mobile. */
 .preview-gallery::after { content:""; flex:0 0 max(45%, 400px); }
 @media (max-width:640px) { .preview-gallery::after { flex-basis: 15%; } }
+
+
+/* Revenue-goal storytelling: example mathematics, not a sales projection. */
+.goal-section { background: radial-gradient(circle at 11% 10%,rgba(233,186,92,.13),transparent 36%), linear-gradient(145deg,#082d23,#104c39); color:#f9f1dc; position:relative; overflow:hidden; }
+.goal-section::before { content:"";position:absolute;inset:0;pointer-events:none;opacity:.26;background-image:radial-gradient(circle at 26% 32%,rgba(237,206,131,.45) 1px,transparent 2px),radial-gradient(circle at 75% 82%,rgba(237,206,131,.3) 1px,transparent 2px);background-size:110px 110px,147px 147px; }
+.goal-section .container {position:relative;z-index:1;}
+.goal-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(24px,5vw,72px);align-items:center;}
+.goal-copy h2 {font-family:Georgia,"Times New Roman",serif;font-size:clamp(2rem,4vw,3.65rem);line-height:1.09;margin:.4em 0 .48em;letter-spacing:-.032em;color:#fffaf0;text-wrap:balance;}
+.goal-copy h2 em {font-style:normal;color:var(--gold-300);}
+.goal-copy p {max-width:525px;color:#e7e8dd;font-size:clamp(.96rem,1.3vw,1.09rem);line-height:1.7;}
+.goal-copy .goal-small {font-size:.84rem;color:#cddcd1;line-height:1.6;}
+.goal-math {padding:20px;border:1px solid rgba(234,209,157,.3);border-radius:28px;background:rgba(255,255,255,.065);box-shadow:0 18px 55px rgba(0,0,0,.16);}
+.goal-scenario {padding:22px 23px;border-radius:18px;background:linear-gradient(145deg,#fbf6e9,#f3e9d6);color:#193c2c;}
+.goal-scenario + .goal-scenario {margin-top:12px;}
+.goal-scenario>span {color:#7b623d;letter-spacing:.16em;font-size:.7rem;font-weight:850;}
+.goal-scenario>div {margin:12px 0 6px;display:flex;align-items:baseline;flex-wrap:wrap;gap:.42em;font-size:.94rem;font-weight:650;}
+.goal-scenario strong {font-family:Georgia,serif;color:#0d4936;font-size:clamp(1.8rem,3vw,2.7rem);line-height:1;}
+.goal-scenario b {color:#a27222;}
+.goal-scenario p {border-top:1px solid #dfd0b7;margin:14px 0 0;padding-top:12px;font-size:1.01rem;}
+.goal-scenario p b {font-size:1.16rem;color:#0f5a3b;}
+.goal-warning {margin:14px 7px 2px;color:#d4e0d6;font-size:.78rem;line-height:1.55;}
+.goal-action {margin-top:30px;}
+.goal-section .section-kicker {color:var(--gold-300);}
+.goal-disclaimer {font-size:.72rem;line-height:1.5;color:rgba(250,249,235,.83);max-width:540px;letter-spacing:0;}
+/* Keep long anchor-target content visible below a fixed header. */
+html {scroll-padding-top:90px;}
+section[id] {scroll-margin-top:90px;}
+/* Containment avoids painting heavy, distant sections on initial mobile load.
+   Video and hero deliberately remain outside containment. */
+@supports (content-visibility:auto) {
+  .sweets-section,.kit-section,.process-section,.previews-section,.audience-section,.credibility-section,.faq-section {
+    content-visibility:auto;
+    contain-intrinsic-size:auto 700px;
+  }
+}
+.sweets-track,.preview-gallery { -webkit-overflow-scrolling:touch; }
+@media (max-width:780px) {
+  .goal-layout {grid-template-columns:1fr;gap:18px;}
+  .goal-copy h2 {font-size:clamp(2.15rem,7.2vw,3rem);}
+  .goal-math {padding:14px;}
+}
+@media (max-width:640px) {
+  .goal-section {padding-block:53px;}
+  .goal-copy h2 {font-size:clamp(2.1rem,8.8vw,2.7rem);line-height:1.12;}
+  .goal-copy p {font-size:.96rem;}
+  .goal-scenario {padding:18px;}
+  .goal-scenario>div {font-size:.83rem;gap:.35em;}
+  .goal-scenario strong {font-size:clamp(1.65rem,7vw,2.1rem);}
+  .goal-action .button {width:100%;white-space:normal;text-align:center;}
+  .hero h1 {font-size:clamp(2.12rem,9vw,2.95rem);line-height:1.09;}
+  .hero-lead {font-size:.95rem;line-height:1.58;}
+  .goal-disclaimer {font-size:.68rem;line-height:1.45;}
+  html {scroll-padding-top:74px;}
+  section[id] {scroll-margin-top:74px;}
+  .sparkle {animation:none!important;}
+}
+@media (max-width:360px) {
+  .hero h1 {font-size:2.02rem;letter-spacing:-.025em;}
+  .goal-scenario>div {font-size:.79rem;}
+}
