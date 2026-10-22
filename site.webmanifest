@@ -1,9 +1,16 @@
 {
   "name": "Natal que Vende",
   "short_name": "Natal que Vende",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#fffdf8",
   "theme_color": "#0b3d2e",
-  "icons": [{"src":"assets/images/favicon.png","sizes":"256x256","type":"image/png"}]
+  "icons": [
+    {
+      "src": "assets/images/favicon.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "scope": "./"
 }
