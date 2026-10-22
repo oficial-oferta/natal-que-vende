@@ -48,10 +48,23 @@
   }
 
   qsa('[data-current-year]').forEach((el) => { el.textContent = String(new Date().getFullYear()); });
-  qsa('[data-price-label]').forEach((el) => { el.textContent = config.PRICE_LABEL || 'Preço em definição'; });
-  qsa('[data-price-note]').forEach((el) => { el.textContent = config.PRICE_NOTE || 'O valor será informado antes do lançamento.'; });
+  qsa('[data-price-label]').forEach((el) => { el.textContent = config.PRICE_LABEL || 'Preço à vista a confirmar'; });
+  qsa('[data-price-note]').forEach((el) => { el.textContent = config.PRICE_NOTE || ''; });
+  const installments = Math.max(1, Math.min(12, Number(config.INSTALLMENTS_COUNT) || 4));
+  // No installment price can be invented: show "4x de R$ X" only when confirmed
+  // at the actual checkout. An empty INSTALLMENTS_PRICE retains truthful wording.
+  const quotedInstallmentPrice = /^R\$\s?\d+[.,]\d{2}$/.test(String(config.INSTALLMENTS_PRICE || '').trim())
+    ? String(config.INSTALLMENTS_PRICE).trim()
+    : '';
+  const installmentLabel = quotedInstallmentPrice
+    ? `${installments}x de ${quotedInstallmentPrice} no cartão`
+    : `Em até ${installments}x no cartão`;
+  qsa('[data-installments-label]').forEach((el) => { el.textContent = installmentLabel; });
+  qsa('[data-installments-note]').forEach((el) => {
+    el.textContent = config.INSTALLMENTS_NOTE || 'O valor final das parcelas será confirmado no checkout.';
+  });
   qsa('[data-sticky-price]').forEach((el) => {
-    el.textContent = config.PRICE_LABEL && !/definição/i.test(config.PRICE_LABEL) ? config.PRICE_LABEL : 'Conheça o kit';
+    el.textContent = (config.PRICE_LABEL || 'Preço à vista a confirmar') + ' à vista';
   });
 
   function trackPixelEvent(name, params = {}) {
