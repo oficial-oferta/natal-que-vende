@@ -27,7 +27,11 @@ try {
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
-      await page.locator('[data-preview-next]').click();
+      for (let i = 0; i < 5; i++) {
+        await page.locator('[data-preview-next]').click();
+        await page.waitForTimeout(260);
+      }
+      assert.ok((await page.locator('[data-preview-count]').textContent()).includes('06 / 06'), 'Carousel did not reach its final preview');
       await page.locator('.preview-card [data-preview-zoom]').first().click();
       assert.equal(await page.locator('[data-preview-lightbox]').evaluate(el => el.open), true, 'Preview dialog not open');
       await page.locator('[data-lightbox-close]').click();
