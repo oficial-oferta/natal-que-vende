@@ -4,8 +4,11 @@
  */
 window.NQV_CONFIG = {
   CHECKOUT_URL: "",
-  PRICE_LABEL: "Preço em definição",
-  PRICE_NOTE: "O valor oficial será configurado antes da publicação comercial.",
+  PRICE_LABEL: "R$ 19,90",
+  PRICE_NOTE: "Preço à vista. Parcelamento no cartão tem acréscimo calculado no checkout.",
+  INSTALLMENTS_COUNT: 4,
+  INSTALLMENTS_PRICE: "", // Preencher SOMENTE após confirmar o valor real no checkout Cakto.
+  INSTALLMENTS_NOTE: "Parcelamento sujeito a acréscimo. Confira o valor exato e o total no checkout.",
   VIDEO_URL: "",
   VIDEO_POSTER: "assets/images/mesa.webp",
   META_PIXEL_ID: "",
