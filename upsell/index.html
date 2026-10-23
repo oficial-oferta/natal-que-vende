@@ -118,12 +118,27 @@
           <p class="checkout-caption">Complemento digital • pagamento único</p>
           <div class="price-line"><small>Adicione por</small><strong>R$ 39,90</strong><span>à vista</span></div>
           <div class="payline">Sem mensalidades. A cobrança do adicional será realizada pela Cakto se você aceitar a oferta.</div>
-          <div class="official-action-slot" id="cakto-upsell-buttons" aria-label="Botões oficiais da oferta Cakto">
-            <!-- SUBSTITUIR OS DOIS BOTÕES DE PRÉVIA PELO BLOCO OFICIAL GERADO PELA CAKTO. -->
-            <button type="button" class="button button-gold checkout-main-action" disabled aria-disabled="true" title="Integração oficial Cakto pendente">SIM, QUERO ADICIONAR O PRO <span aria-hidden="true">→</span></button>
-            <button type="button" class="decline-link" disabled aria-disabled="true" title="Integração oficial Cakto pendente">Não, obrigado. Quero continuar com minha compra original.</button>
+          <div class="official-action-slot" id="cakto-upsell-buttons" aria-label="Escolha sua oferta complementar na Cakto">
+            <!-- Componentes oficiais copiados do Gerador de Upsell da Cakto.
+                 offer-id identifica a OFERTA, não o ID de produto usado pelo webhook.
+                 O único ajuste é o destino pós-escolha: nosso site de instruções,
+                 em vez de members_area da área de membros padrão da Cakto. -->
+            <cakto-upsell-buttons>
+              <cakto-upsell-accept
+                bg-color="#13780fff"
+                text-color="#ffffff"
+                upsell-accept-url="https://oficial-oferta.github.io/natal-que-vende/obrigado/"
+                offer-id="5ymryom"
+                app-base-url="https://app.cakto.com.br"
+                offer-type="upsell"
+                upsell-reject-url="https://oficial-oferta.github.io/natal-que-vende/obrigado/"
+              >Sim, quero adicionar os 8 Kits Premium por R$ 39,90!</cakto-upsell-accept>
+              <cakto-upsell-reject
+                upsell-reject-url="https://oficial-oferta.github.io/natal-que-vende/obrigado/"
+              >Não, obrigado. Quero continuar com minha compra original.</cakto-upsell-reject>
+            </cakto-upsell-buttons>
           </div>
-          <p class="integration-note" id="integration-note" role="status">Prévia da oferta. Os botões de aceitar e recusar serão ativados com o código oficial da Cakto antes do lançamento.</p>
+          <p class="integration-note" id="integration-note" role="status">A Cakto processa sua escolha e o pagamento do adicional. Após a confirmação, os materiais adquiridos serão vinculados ao e-mail utilizado na compra.</p>
           <div class="checkout-trust">
             <span>◈ Pagamento pela Cakto</span><span>✉ Acesso por e-mail</span>
           </div>
@@ -146,5 +161,6 @@
   <footer class="footer">
     <div class="wrap footer-grid"><a href="../" aria-label="Natal que Vende, página inicial"><img src="../assets/images/logo-natal-que-vende-v2.webp" width="85" height="85" alt="Natal que Vende"></a><p>© <span id="year">2026</span> Natal que Vende. Material digital. Oferta complementar opcional.</p><a href="../portal/">Área de membros <span aria-hidden="true">↗</span></a></div>
   </footer>
+  <script type="text/javascript" src="https://caktoscripts.nyc3.cdn.digitaloceanspaces.com/upsell.js" defer></script>
 </body>
 </html>
