@@ -109,8 +109,9 @@
           <div class="member-heading">
             <div><span class="eyebrow">SUA BIBLIOTECA DIGITAL</span><h2>Meus materiais</h2>
               <p>Escolha um módulo para visualizar os recursos disponíveis e estudar no seu ritmo.</p></div>
-            <span class="member-count" data-resource-count>5 módulos</span>
+            <span class="member-count" data-resource-count>5 módulos · acesso protegido</span>
           </div>
+          <div class="library-intro" id="library-intro"><span aria-hidden="true">✧</span><div><strong>Seu conteúdo, no seu ritmo.</strong><p>Abra um módulo para ver instruções, materiais e links disponíveis. Recomendamos começar pelo primeiro.</p></div></div>
           <div class="modules-grid" id="modules-grid">
             <article class="module" data-module="1">
               <div class="module-top"><span class="module-index">01</span><span class="module-type">GUIA INICIAL</span></div>
@@ -118,6 +119,7 @@
               <h3>Comece por Aqui</h3>
               <p>Conheça o Método 5P e planeje seus primeiros passos.</p>
               <div class="module-files" data-resources="1"></div>
+              <button type="button" class="module-open" data-open-module="1" aria-label="Abrir módulo 01">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="2">
               <div class="module-top"><span class="module-index">02</span><span class="module-type">RECEITAS</span></div>
@@ -125,6 +127,7 @@
               <h3>Os 5 Produtos de Natal</h3>
               <p>Aprenda, teste, precifique e apresente seus doces natalinos.</p>
               <div class="module-files" data-resources="2"></div>
+              <button type="button" class="module-open" data-open-module="2" aria-label="Abrir módulo 02">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="3">
               <div class="module-top"><span class="module-index">03</span><span class="module-type">VENDAS E ENCOMENDAS</span></div>
@@ -132,6 +135,7 @@
               <h3>O Segredo das Encomendas</h3>
               <p>Organize divulgação, conversas e confirmações de pedido.</p>
               <div class="module-files" data-resources="3"></div>
+              <button type="button" class="module-open" data-open-module="3" aria-label="Abrir módulo 03">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="4">
               <div class="module-top"><span class="module-index">04</span><span class="module-type">DESIGN EDITÁVEL</span></div>
@@ -139,6 +143,7 @@
               <h3>Kit Natal que Vende</h3>
               <p>Cardápios, catálogo, posts, Stories, tags e orçamentos no Canva.</p>
               <div class="module-files" data-resources="4"></div>
+              <button type="button" class="module-open" data-open-module="4" aria-label="Abrir módulo 04">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="5">
               <div class="module-top"><span class="module-index">05</span><span class="module-type">PLANILHA</span></div>
@@ -146,8 +151,34 @@
               <h3>Controle Seu Lucro</h3>
               <p>Organize custos, encomendas, recebimentos e resultados.</p>
               <div class="module-files" data-resources="5"></div>
+              <button type="button" class="module-open" data-open-module="5" aria-label="Abrir módulo 05">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
           </div>
+          <section id="module-detail" class="module-detail" hidden aria-labelledby="detail-title">
+            <button type="button" class="module-back" id="module-back"><span aria-hidden="true">←</span> Voltar para todos os módulos</button>
+            <div class="module-detail-hero">
+              <div class="detail-heading">
+                <span class="eyebrow" id="detail-eyebrow">MÓDULO</span>
+                <h2 id="detail-title">Seu material</h2>
+                <p id="detail-lead">Aprenda e coloque em prática.</p>
+              </div>
+              <div class="detail-seal" aria-hidden="true"><span id="detail-number">01</span><small>NATAL QUE VENDE</small></div>
+            </div>
+            <div class="module-detail-columns">
+              <div class="module-learning">
+                <span class="eyebrow">ROTEIRO PRÁTICO</span>
+                <h3>Como aproveitar este módulo</h3>
+                <ol class="module-steps" id="module-steps"></ol>
+              </div>
+              <div class="module-downloads">
+                <span class="eyebrow">SEUS ARQUIVOS</span>
+                <h3>Materiais para acessar</h3>
+                <p>Os botões abaixo consultam sua autorização antes de gerar um link temporário.</p>
+                <div class="detail-resources" id="detail-resources"></div>
+                <p class="files-footnote">Precisa abrir no celular? Os PDFs e planilhas podem ser visualizados ou salvos no seu aparelho. Links do Canva abrem diretamente no editor.</p>
+              </div>
+            </div>
+          </section>
           <div class="bottom-advice"><strong>Uma dica para sua jornada</strong><p>Comece pelo Módulo 01, estude os produtos antes de produzir e use a planilha para acompanhar os custos. Uma meta de faturamento é planejamento, não resultado garantido.</p></div>
         </div>
       </div>
