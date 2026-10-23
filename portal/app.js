@@ -17,6 +17,40 @@
   const logoutButton = $('[data-logout]');
   $('[data-year]').textContent = String(new Date().getFullYear());
 
+  const moduleDetail = $('#module-detail');
+  const memberHeading = $('.member-heading');
+  const moduleGrid = $('#modules-grid');
+  const libraryIntro = $('#library-intro');
+  const bottomAdvice = $('.bottom-advice');
+  const modulePlans = Object.freeze({
+    1: {
+      tag: 'MÓDULO 01 · PRIMEIROS PASSOS', title: 'Comece por Aqui',
+      lead: 'Entenda o caminho completo antes de começar. O guia inicial apresenta o método e ajuda você a planejar sua produção e suas vendas.',
+      steps: ['Leia o guia principal e identifique as etapas do método.', 'Defina sua rotina de produção, público e primeiros objetivos.', 'Anote suas decisões e avance para os produtos do Módulo 02.']
+    },
+    2: {
+      tag: 'MÓDULO 02 · RECEITAS', title: 'Os 5 Produtos de Natal',
+      lead: 'Aprenda a planejar seu cardápio com cinco opções natalinas: chocotone recheado, brigadeiros, biscoitos amanteigados, brownie e cupcakes.',
+      steps: ['Escolha o produto que combina com sua estrutura e orçamento.', 'Leia as orientações e faça testes de preparo antes de anunciar.', 'Registre seus custos e planeje quantas unidades poderá produzir.']
+    },
+    3: {
+      tag: 'MÓDULO 03 · PEDIDOS E VENDAS', title: 'O Segredo das Encomendas',
+      lead: 'Organize sua comunicação e o atendimento para transformar interesse em encomendas confirmadas.',
+      steps: ['Prepare uma apresentação clara dos produtos e dos prazos.', 'Estude as orientações para receber e confirmar os pedidos.', 'Defina como acompanhar pagamentos e combinar as entregas.']
+    },
+    4: {
+      tag: 'MÓDULO 04 · MATERIAIS EDITÁVEIS', title: 'Kit Natal que Vende',
+      lead: 'Seu kit de comunicação no Canva: cardápios, catálogo, posts, Stories, ofertas, tags e orçamentos. Os links oficiais de cópia precisam ser publicados e validados antes da entrega.',
+      steps: ['Abra o guia de acesso quando ele estiver disponível nesta página.', 'Use os links oficiais de modelo para criar sua própria cópia no Canva.', 'Personalize os layouts com produtos, preços, fotos e dados do seu negócio.']
+    },
+    5: {
+      tag: 'MÓDULO 05 · ORGANIZAÇÃO FINANCEIRA', title: 'Controle Seu Lucro',
+      lead: 'Use a planilha para organizar custos, encomendas, recebimentos e resultados.',
+      steps: ['Abra a planilha e leia as instruções de preenchimento.', 'Insira seus custos e estimativas antes de definir preços.', 'Acompanhe pagamentos, valores recebidos e resultados reais.']
+    }
+  });
+  let publishedResources = [];
+
   let client = null;
   let currentUserId = null;
   let isChecking = false;
@@ -76,45 +110,100 @@
     if (error || !data?.signedUrl) throw new Error('Não foi possível abrir o arquivo. Tente novamente.');
     return data.signedUrl;
   }
+  function createResourceButton(row) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'resource-button';
+    const title = document.createElement('span');
+    title.textContent = row.title || 'Abrir material';
+    const arrow = document.createElement('span');
+    arrow.setAttribute('aria-hidden', 'true');
+    arrow.textContent = '↗';
+    button.append(title, arrow);
+    button.addEventListener('click', async () => {
+      // Abrir a aba no clique (antes do await), reduz bloqueios de pop-up.
+      const tab = window.open('about:blank', '_blank');
+      if (tab) { tab.opener = null; tab.document.title = 'Abrindo material protegido'; }
+      button.disabled = true;
+      try {
+        // O backend ainda verifica a compra em cada pedido de URL assinada.
+        const href = await signedResourceUrl(row);
+        if (tab && !tab.closed) tab.location.replace(href);
+        else window.location.assign(href);
+      } catch (error) {
+        if (tab && !tab.closed) tab.close();
+        showAccessNotice(error?.message || 'Não foi possível abrir o conteúdo.');
+      } finally {
+        button.disabled = false;
+      }
+    });
+    return button;
+  }
+  function showOverview() {
+    toggle(moduleGrid, true);
+    toggle(memberHeading, true);
+    toggle(libraryIntro, true);
+    toggle(bottomAdvice, true);
+    toggle(moduleDetail, false);
+  }
+  function openModule(number) {
+    const plan = modulePlans[number];
+    if (!plan || library.hidden || !currentUserId) return;
+    say($('#detail-eyebrow'), plan.tag);
+    say($('#detail-title'), plan.title);
+    say($('#detail-lead'), plan.lead);
+    say($('#detail-number'), String(number).padStart(2, '0'));
+    const steps = $('#module-steps');
+    steps.replaceChildren();
+    for (const step of plan.steps) {
+      const li = document.createElement('li');
+      li.textContent = step;
+      steps.append(li);
+    }
+    const downloads = $('#detail-resources');
+    downloads.replaceChildren();
+    const rows = publishedResources.filter(row => Number(row.module_no) === number);
+    if (rows.length) {
+      for (const row of rows) downloads.append(createResourceButton(row));
+    } else {
+      const placeholder = document.createElement('p');
+      placeholder.className = 'resource-empty';
+      placeholder.textContent = number === 4
+        ? 'Os arquivos e links oficiais do Canva estão sendo preparados para publicação segura. Eles aparecerão aqui quando estiverem disponíveis.'
+        : 'Este módulo já tem sua estrutura pronta. Os arquivos serão disponibilizados aqui quando forem publicados.';
+      downloads.append(placeholder);
+    }
+    toggle(moduleGrid, false);
+    toggle(memberHeading, false);
+    toggle(libraryIntro, false);
+    toggle(bottomAdvice, false);
+    toggle(moduleDetail, true);
+    moduleDetail.scrollIntoView({ behavior: 'instant', block: 'start' });
+  }
   function renderResources(rows) {
+    publishedResources = Array.isArray(rows) ? rows : [];
     for (let number = 1; number <= 5; number++) {
       const container = $('[data-resources="' + number + '"]');
       if (!container) continue;
       container.replaceChildren();
-      const resources = rows.filter(row => Number(row.module_no) === number);
-      if (!resources.length) {
-        const empty = document.createElement('span');
-        empty.className = 'empty-resources';
-        empty.textContent = 'Arquivos deste módulo em preparação.';
-        container.append(empty);
-        continue;
-      }
-      for (const row of resources) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.className = 'resource-button';
-        const title = document.createElement('span');
-        title.textContent = row.title || 'Abrir material';
-        const arrow = document.createElement('span');
-        arrow.setAttribute('aria-hidden', 'true');
-        arrow.textContent = '↗';
-        button.append(title, arrow);
-        button.addEventListener('click', async () => {
-          button.disabled = true;
-          try {
-            const href = await signedResourceUrl(row);
-            // Browser opens only links returned after verified membership, never public source files.
-            window.open(href, '_blank', 'noopener,noreferrer');
-          } catch (error) {
-            showAccessNotice(error?.message || 'Não foi possível abrir o conteúdo.');
-          } finally {
-            button.disabled = false;
-          }
-        });
-        container.append(button);
-      }
+      const count = publishedResources.filter(row => Number(row.module_no) === number).length;
+      const element = document.createElement('span');
+      element.className = count ? 'module-file-count' : 'empty-resources';
+      element.textContent = count
+        ? count + (count === 1 ? ' material disponível' : ' materiais disponíveis')
+        : 'Materiais em preparação';
+      container.append(element);
     }
+    say($('[data-resource-count]'), '5 módulos · ' + publishedResources.length +
+      (publishedResources.length === 1 ? ' arquivo publicado' : ' arquivos publicados'));
   }
+  for (const button of $$('[data-open-module]')) {
+    button.addEventListener('click', () => openModule(Number(button.dataset.openModule)));
+  }
+  $('#module-back').addEventListener('click', () => {
+    showOverview();
+    memberHeading.scrollIntoView({ behavior: 'instant', block: 'start' });
+  });
   async function refreshAccess() {
     if (!client || isChecking) return;
     isChecking = true;
@@ -142,6 +231,7 @@
         .order('sort_order', { ascending: true });
       if (filesError) throw new Error('Não foi possível carregar os materiais. Atualize a página.');
       renderResources(files || []);
+      showOverview();
       toggle(accessDenied, false);
       toggle(library, true);
       showAccessNotice('');
@@ -210,6 +300,7 @@
       needsPasswordSetup = false;
       toggle(passwordCard, false);
       showAccessNotice('Senha definida com sucesso. Seu acesso está protegido.');
+      await refreshAccess();
     } catch {
       say($('#set-password-message'), 'Não foi possível salvar. Verifique a senha e tente novamente.');
     } finally { busy(setPasswordForm, false); }
