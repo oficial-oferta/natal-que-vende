@@ -94,6 +94,31 @@ Os anexos finais recebidos nesta conversa foram inspecionados e catalogados em `
 
 **Módulo 03:** o PDF continua intitulado `O Segredo das Encomendas`. A chamada comercial no site foi aprimorada para vendas e metas; "até R$ 3.000 por semana" é meta ilustrativa de **faturamento**, não promessa de vendas, lucro ou resultado comprovado pelo material.
 
+## Produtos complementares e recompra na área de membros — 23/10/2026
+
+Foram criados dois cartões opcionais na seção **Conteúdos Premium**, separada dos módulos 01–05:
+- **Segredos do Recheio Premium**, preço de teste R$ 9,90, primeiro extra/order bump.
+- **Natal que Vende PRO — Presentes de Alto Valor**, preço de teste R$ 39,90, segundo extra/upsell.
+
+**Proteção real, independente:** `public.natal_offers` registra o slug e o **ID real da Cakto** de cada um dos três produtos; `public.access_orders` mantém um pedido por ID, com estado pago ou revogado; a RPC `public.has_natal_premium(p_slug)` exige pedido **daquele produto extra específico**. `public.premium_resources` e as políticas RLS do bucket privado só liberam seus arquivos quando o respectivo extra foi comprado e o arquivo está publicado. A conta do proprietário tem direito de prévia. A regra `has_natal_access()` foi corrigida: compra de bump ou upsell **não libera o curso principal**.
+
+**Situação de configuração:** IDs de Cakto e links de checkout dos três produtos ainda são `NULL`, e os três recursos premium (PDF 01, PDF 02 e planilha opcional) estão com `published=false`. Os cartões aparecem bloqueados. O botão de compra permanece desativado enquanto não existir URL HTTPS configurada. Não anunciar venda funcionando enquanto não houver compra de teste aprovada.
+
+**Como conectar:** entrar com a conta proprietária em `portal/upload.html`, encontrar "Conectar produtos da Cakto" e informar para cada produto o ID real e o link HTTPS da oferta. A ação é protegida por `is_nqv_admin` e só permite editar essas duas colunas. Não incluir segredos ou tokens ali. Os produtos extras devem ser cadastrados como produtos próprios dentro da Cakto, vinculados como order bump e upsell do checkout principal.
+
+**Webhook:** `cakto-webhook` (versão 3) valida a assinatura, identifica o ID de cada pedido e consulta o catálogo configurado; registra estado aprovado, refund e chargeback separadamente. No momento da integração real, configurar a chave secreta de assinatura da Cakto exclusivamente em `SUPABASE Edge Function Secrets`, confirmar campos/formato com um webhook real e testar compra Pix/cartão, recompra posterior, pedido duplicado, estorno e cancelamento. A função **ainda não está comprovada em produção**; a configuração real Cakto não foi finalizada.
+
+**Entrega:** upload protegido do proprietário no bucket `natal-pago` pelos caminhos
+- `premium/recheios/segredos-do-recheio-premium.pdf`
+- `premium/kits/presentes-de-alto-valor.pdf`
+- `premium/kits/calculadora-de-kits.xlsx` (se produzida)
+
+A cliente que pagou vê "Acesso liberado" e abre somente os seus PDFs/planilha. Quem não pagou vê os cartões fechados e, depois que o link de checkout existir, pode comprar o extra posteriormente usando **o mesmo e-mail** da conta. O curso de cinco módulos permanece com progressão sequencial independente.
+
+**Fontes da configuração Cakto:**
+- https://ajuda.cakto.com.br/pt-br/articles/16-como-funcionam-os-order-bumps-na-cakto
+- https://ajuda.cakto.com.br/pt/article/como-configurar-upsell-e-diferentes-funis-na-cakto-1pd1eyo/
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
