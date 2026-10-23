@@ -68,6 +68,32 @@ O Módulo 04 depende da emissão/validação dos **30 links oficiais de template
 - Também existem templates separados de **convite**, **link de acesso** e **recuperação de senha**. A configuração ativa do Supabase permite um modelo por evento; os HTMLs arquivados no GitHub não são implantados automaticamente no painel.
 - Evite conteúdo promocional, convites repetidos sem motivo e mudanças frequentes de copy. Migre do Gmail para serviço transacional com domínio verificado antes de aumentar o volume.
 
+## Jornada premium e arquivos finais — 23/10/2026
+
+### Progresso e liberação sequencial
+
+- O Módulo 01 começa liberado quando o comprador tem autorização de acesso.
+- A aluna marca **Concluí este módulo e quero continuar**; o RPC autenticado `complete_natal_module` grava a conclusão em `public.module_progress`.
+- Cada etapa seguinte só fica liberada depois de registrada a conclusão anterior; `public.can_access_natal_module` controla a autorização nos recursos e nas políticas de `storage.objects`. **Não é apenas bloqueio visual em JavaScript.**
+- A conclusão é uma declaração da própria aluna, não uma prova de que leu todo o material; é idempotente e fica salva entre dispositivos.
+- O dashboard mostra 0–5 etapas concluídas, barra de progresso, estado de cada módulo e continuação automática.
+
+### Materiais recebidos e mapeados
+
+Os anexos finais recebidos nesta conversa foram inspecionados e catalogados em `public.resources`; **nenhum conteúdo pago foi colocado no repositório público**:
+
+| Módulo | Material recebido | Destino previsto |
+|---|---|---|
+| 01 | Guia Principal, PDF de 39 páginas | `01/guia-principal.pdf` |
+| 02 | Os 5 Produtos de Natal FINAL REVISADO, PDF de 64 páginas | `02/os-5-produtos-de-natal.pdf` |
+| 03 | O Segredo das Encomendas FINAL REVISADO, PDF de 54 páginas | `03/o-segredo-das-encomendas.pdf` |
+| 04 | Pasta Canva de 30 designs; guia ainda pré-publicação com links pendentes | `04/guia-de-acesso-canva.pdf` **somente após validar 30 links** |
+| 05 | Controle Seu Lucro FINAL APROVADO, XLSX de 5 abas | `05/controle-seu-lucro.xlsx` |
+
+**Atenção:** o conector atual Supabase não permite transferir arquivos binários enviados ao chat diretamente para Storage. Foi implementada uma central de publicação segura, **`portal/upload.html`**, para o proprietário selecionar os quatro arquivos em seu computador e publicá-los diretamente no bucket privado. Ela exige login, RPC `is_nqv_admin` e políticas de Storage específicas para os caminhos previamente declarados. Ao terminar um upload, ativa a linha correspondente de `public.resources`. A conta proprietária tem papel administrativo fixo em `nqv_internal.owner_accounts`, e os compradores não podem enviar ou publicar arquivos. Uploads não concluídos ou falhos não devem ser descritos como publicação pronta.
+
+**Módulo 03:** o PDF continua intitulado `O Segredo das Encomendas`. A chamada comercial no site foi aprimorada para vendas e metas; "até R$ 3.000 por semana" é meta ilustrativa de **faturamento**, não promessa de vendas, lucro ou resultado comprovado pelo material.
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
