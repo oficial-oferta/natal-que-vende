@@ -42,3 +42,5 @@ jobs:
         run: node tests/smoke.mjs
       - name: Test members portal across 7 viewports
         run: node tests/portal-smoke.mjs
+      - name: Test gated membership and protected module navigation
+        run: node tests/portal-membership.mjs
