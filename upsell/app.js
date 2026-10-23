@@ -3,16 +3,13 @@
   const year = document.getElementById('year');
   if (year) year.textContent = String(new Date().getFullYear());
 
-  // A Cakto é responsável por aceitar/recusar o upsell pós-compra.
-  // Sem o código oficial do "Gerador de Upsell", os botões de prévia
-  // ficam desabilitados. Nunca simular aprovação ou cobrança no navegador.
-  const actions = document.getElementById('cakto-upsell-buttons');
-  if (!actions) return;
-  const previewButtons = [...actions.querySelectorAll('button[disabled]')];
-  // Este painel de integração é removido manualmente somente ao inserir
-  // os botões gerados e validar pagamento e recusa em um teste real.
-  if (previewButtons.length !== 2) {
-    const note = document.getElementById('integration-note');
-    if (note) note.hidden = true;
-  }
+  // Cakto owns the payment confirmation and accept/reject interactions.
+  // We never implement simulated upsell payments or redirect on click here.
+  const cdn = document.querySelector('script[src="https://caktoscripts.nyc3.cdn.digitaloceanspaces.com/upsell.js"]');
+  const note = document.getElementById('integration-note');
+  if (!cdn || !note) return;
+  cdn.addEventListener('error', () => {
+    note.textContent = 'Não foi possível carregar os botões da Cakto. Atualize a página e tente novamente. Nenhuma compra adicional foi registrada aqui.';
+    note.setAttribute('role','alert');
+  });
 })();
