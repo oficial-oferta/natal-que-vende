@@ -14,6 +14,12 @@ O GitHub Pages serve **somente a interface**. Login, validação do pagamento e 
 
 **LEMBRETE DE MIGRAÇÃO FUTURA — NÃO ESQUECER:** assim que a quantidade de vendas/e-mails crescer, **migrar do Gmail para um serviço transacional profissional (preferência inicial: Resend) com domínio próprio validado (SPF/DKIM)**. Revisar essa necessidade **antes de escalar anúncios** ou antes se ocorrerem atrasos, bloqueios, spam, falhas de entrega ou aproximação dos limites de envio. A troca deve preservar a conta Supabase, o acesso das compradoras e o portal já existente. Monitorar taxa de entrega, bounces e falhas.
 
+## Diagnóstico de envio — 23/10/2026 (verificado)
+
+Foi realizado um convite único real via `supabase.auth.admin.inviteUserByEmail` para `acesso.natalquevende@gmail.com`, usando uma Edge Function temporária com autorização forte. **O envio falhou** com HTTP 500 no Supabase Auth e mensagem SMTP do Google **`535 5.7.8 Username and Password not accepted`**. O PostgreSQL confirmou **0 usuários criados, 0 pedidos**, ou seja, nenhum acesso foi liberado. A Edge Function temporária foi **desativada e substituída por um handler que só retorna 410**, com validação JWT habilitada (versão 2). Não reutilizar o endpoint.
+
+**Ação do proprietário:** gerar uma **nova senha de aplicativo do Google** na conta remetente (verificação em duas etapas ativa), abrir o [SMTP do projeto](https://supabase.com/dashboard/project/dvpmypjeabbzfvdzalow/auth/smtp) e substituir exclusivamente a senha, verificando que o usuário é `acesso.natalquevende@gmail.com`. Host: `smtp.gmail.com`, porta: `465` SSL ou `587` STARTTLS conforme campo. Nunca usar senha normal do Gmail e nunca compartilhar a senha de aplicativo no chat ou repositório. Confirmar e então refazer um único convite via dashboard ou por mecanismo seguro de backend. Consulte [Ajuda Google — Senhas de app](https://support.google.com/accounts/answer/185833?hl=pt-BR).
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
