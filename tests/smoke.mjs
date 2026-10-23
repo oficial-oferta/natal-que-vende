@@ -52,10 +52,10 @@ try {
     assert.equal(state.moduleFourVisualPresent, true, 'Product 04 visual showcase missing');
     assert.equal(state.goalPresent, true, 'Illustrative R$10K goal section missing');
     assert.ok(state.heroBackground.includes(width <= 640 ? 'mesa-mobile.webp' : 'mesa.webp'), 'Wrong responsive hero image at ' + width);
-    assert.equal(state.installmentText, 'Em até 4x no cartão', 'Unverified installment amount published');
+    assert.equal(state.installmentText, '4x de R$ 5,63 no cartão', 'Confirmed installment amount must match the Cakto checkout');
     assert.ok(state.cashText.includes('R$ 19,90'), 'Missing cash price');
     assert.ok(state.stickyText.includes('R$ 19,90'), 'Missing mobile sticky cash price');
-    assert.ok(state.installmentDisclosure.includes('checkout'), 'Missing installment fee disclosure');
+    assert.ok(state.installmentDisclosure.includes('R$ 22,52') && state.installmentDisclosure.includes('R$ 19,90') && state.installmentDisclosure.includes('R$ 2,62'), 'Missing total financed, cash price or added installment cost');
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
