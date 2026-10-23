@@ -85,3 +85,24 @@
 .result-disclaimer{color:#7b806f;font-size:.71rem;margin-top:20px;max-width:830px}
 @media(max-width:800px){.journey-banner{grid-template-columns:1fr;gap:22px}.journey-tracker{width:100%}.module-finish{grid-template-columns:1fr;gap:15px}.finish-message,.module-finish .next-module-btn{grid-column:auto}}
 @media(max-width:520px){.journey-banner{padding:24px 20px}.journey-identity{gap:13px}.journey-emblem{width:47px;height:47px;font-size:1.6rem}.journey-banner h2{font-size:1.8rem}.journey-tracker{padding:18px}.module-finish{padding:22px 18px}}
+
+/* Owner-only upload panel for licensed materials, backed by Supabase RLS */
+.admin-main{min-height:calc(100svh - 160px);padding-block:45px 90px}
+.admin-top{padding:clamp(23px,4vw,43px);border-radius:23px;background:radial-gradient(circle at 84% 30%,rgba(245,209,139,.18),transparent 30%),linear-gradient(140deg,#093e2c,#145139);color:#fff;margin-bottom:26px}
+.admin-top .eyebrow{color:#f1dca9}.admin-top h1{font:700 clamp(2.1rem,4vw,3.3rem)/1.1 Georgia,serif;margin-bottom:13px}.admin-top p{max-width:670px;color:#d5e4d6;line-height:1.7;margin:0}
+.admin-steps{display:flex;flex-wrap:wrap;gap:9px;margin:28px 0 20px}
+.admin-steps span{display:inline-block;background:#e9f2e7;border:1px solid #d7e4d4;color:#2d5841;font-size:.72rem;font-weight:800;border-radius:99px;padding:9px 13px}
+.admin-upload-list{display:grid;gap:16px}
+.admin-upload-card{background:#fff;border:1px solid #ebe4d8;border-radius:20px;padding:clamp(20px,3vw,30px);box-shadow:0 12px 35px rgba(16,54,37,.05)}
+.admin-upload-heading{display:flex;align-items:center;justify-content:space-between;gap:18px}
+.admin-upload-heading small{font-size:.68rem;letter-spacing:.11em;font-weight:900;color:#987948}
+.admin-upload-heading h2{font:700 1.55rem Georgia,serif;margin:5px 0 0}
+.admin-upload-state{white-space:nowrap;border-radius:99px;background:#f4eee0;color:#81642f;border:1px solid #e6d6b8;padding:7px 10px;font-size:.71rem;font-weight:800}
+.admin-upload-hint{margin:12px 0 8px;color:#6f7f70;font-size:.82rem;overflow-wrap:anywhere}
+.admin-path{display:inline-block;background:#f2f6f0;padding:6px 9px;border-radius:8px;color:#577260;font-size:.73rem;overflow-wrap:anywhere;max-width:100%}
+.admin-upload-action{margin-top:20px;display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,270px);align-items:center;gap:18px}
+.admin-upload-action input[type=file]{background:#f9faf6;border:1px dashed #becfbb;border-radius:10px;padding:15px 12px;min-width:0;max-width:100%;font-size:.82rem}
+.admin-upload-action .primary-button{margin:0}
+.admin-pending{border-radius:9px;background:#fcf2dc;border:1px solid #ead49f;color:#865f22;font-size:.81rem;padding:11px;margin:14px 0 0}
+.admin-help{border-radius:15px;padding:18px 21px;margin-top:27px;background:#f5f0e6;border:1px solid #e4d7bb;color:#637364;font-size:.82rem;line-height:1.7}
+@media(max-width:680px){.admin-upload-action{grid-template-columns:1fr}.admin-upload-heading{align-items:flex-start}.admin-upload-state{white-space:normal;text-align:center}}
