@@ -82,7 +82,7 @@ try {
       await page.route('https://pay.cakto.com.br/**', route => route.fulfill({
         status:200,contentType:'text/html',body:'<!doctype html><title>Checkout Cakto — resposta simulada no CI</title>'
       }));
-      await page.locator('.js-checkout').first().click();
+      await page.locator('.js-checkout:visible').first().click({timeout:8000});
       await page.waitForURL('https://pay.cakto.com.br/5ymryom_1235383');
       assert.equal(page.url(), 'https://pay.cakto.com.br/5ymryom_1235383');
     }
