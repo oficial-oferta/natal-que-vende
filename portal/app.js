@@ -35,8 +35,8 @@
     },
     3: {
       tag: 'MÓDULO 03 · PEDIDOS E VENDAS', title: 'O Segredo das Encomendas',
-      lead: 'Organize sua comunicação e o atendimento para transformar interesse em encomendas confirmadas.',
-      steps: ['Prepare uma apresentação clara dos produtos e dos prazos.', 'Estude as orientações para receber e confirmar os pedidos.', 'Defina como acompanhar pagamentos e combinar as entregas.']
+      lead: 'O segredo das vendas: aprenda como divulgar, atender e organizar as encomendas enquanto planeja metas de faturamento — até R$ 3 mil por semana é uma meta ilustrativa, nunca uma garantia.',
+      steps: ['Transforme cada doce em uma oferta clara, com preço, embalagem e prazo definidos.', 'Pratique as 10 conversas simuladas e adapte as 15 mensagens comerciais prontas.', 'Execute o desafio de 21 dias e acompanhe os pedidos confirmados sem prometer resultados.']
     },
     4: {
       tag: 'MÓDULO 04 · MATERIAIS EDITÁVEIS', title: 'Kit Natal que Vende',
