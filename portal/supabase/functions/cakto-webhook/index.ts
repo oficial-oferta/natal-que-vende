@@ -41,6 +41,17 @@ function productId(data: Record<string, any>): string {
   return typeof value === "string" || typeof value === "number" ? String(value) : "";
 }
 
+// Stable three-way split for content-quality experiments, not spam-filter circumvention.
+// Repeated webhooks for the same order always select the same message.
+function selectInviteVariant(orderId: string): "A" | "B" | "C" {
+  let hash = 2166136261;
+  for (let i=0;i<orderId.length;i++) {
+    hash ^= orderId.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (["A","B","C"] as const)[(hash >>> 0) % 3];
+}
+
 async function processOneOrder(data: any, event: string, admin: any): Promise<Response> {
   if (!data || typeof data !== "object") return json({ error: "missing_order" }, 422);
 
@@ -83,7 +94,7 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
   // NUNCA se manda senha em texto puro por e-mail.
   const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: portalUrl,
-    data: { origin: "cakto", product: "natal-que-vende" }
+    data: { origin: "cakto", product: "natal-que-vende", email_variant: selectInviteVariant(orderId) }
   });
   if (inviteError) {
     // Uma cliente que já tem conta não recebe novo convite do Supabase.
