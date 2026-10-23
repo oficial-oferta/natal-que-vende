@@ -39,7 +39,10 @@ try {
       installmentText: document.querySelector('[data-installments-label]')?.textContent?.trim(),
       cashText: document.querySelector('.offer-cash-price')?.textContent?.trim(),
       stickyText: document.querySelector('[data-sticky-price]')?.textContent?.trim(),
-      installmentDisclosure: document.querySelector('[data-installments-note]')?.textContent?.trim()
+      installmentDisclosure: document.querySelector('[data-installments-note]')?.textContent?.trim(),
+      checkoutDestination: window.NQV_CONFIG?.CHECKOUT_URL,
+      checkoutButtons: document.querySelectorAll('.js-checkout').length,
+      moduleFourDisclosure: document.querySelector('.offer-pending')?.textContent?.trim()
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
@@ -56,6 +59,9 @@ try {
     assert.ok(state.cashText.includes('R$ 19,90'), 'Missing cash price');
     assert.ok(state.stickyText.includes('R$ 19,90'), 'Missing mobile sticky cash price');
     assert.ok(state.installmentDisclosure.includes('R$ 22,52') && state.installmentDisclosure.includes('R$ 19,90') && state.installmentDisclosure.includes('R$ 2,62'), 'Missing total financed, cash price or added installment cost');
+    assert.equal(state.checkoutDestination, 'https://pay.cakto.com.br/5ymryom_1235383', 'Official Cakto checkout must be configured');
+    assert.ok(state.checkoutButtons >= 4, 'All primary CTAs must be wired to same Cakto URL');
+    assert.ok(state.moduleFourDisclosure?.includes('ainda não está publicado'), 'Must clearly disclose unfinished Canva guide');
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();
@@ -71,6 +77,14 @@ try {
       await page.locator('#video').scrollIntoViewIfNeeded();
       await page.locator('[data-video-play]').click();
       assert.ok((await page.locator('[data-toast]').textContent()).includes('em produção'), 'Missing video placeholder message');
+      // Mock ONLY the network response from the checkout to validate the browser navigation.
+      // This does not simulate a successful payment or record a purchase.
+      await page.route('https://pay.cakto.com.br/**', route => route.fulfill({
+        status:200,contentType:'text/html',body:'<!doctype html><title>Checkout Cakto — resposta simulada no CI</title>'
+      }));
+      await page.locator('.js-checkout').first().click();
+      await page.waitForURL('https://pay.cakto.com.br/5ymryom_1235383');
+      assert.equal(page.url(), 'https://pay.cakto.com.br/5ymryom_1235383');
     }
     console.log(`PASS: ${width}px • no overflow, all images loaded, no JS errors, gallery OK`);
     await page.close();
