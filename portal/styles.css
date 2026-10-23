@@ -45,3 +45,43 @@
 .module-downloads .files-footnote{border-top:1px solid #eee8dc;margin:20px 0 0;padding-top:17px;color:#7d8478;font-size:.76rem}
 @media(max-width:800px){.module-detail-columns{grid-template-columns:1fr}}
 @media(max-width:520px){.library-intro{padding:16px;gap:12px}.module-detail-hero{padding:25px 22px}.detail-seal{display:none}.module-detail-hero h2{font-size:2.45rem}.module-learning,.module-downloads{padding:22px}.module-steps{gap:18px}}
+
+/* Natal que Vende · sequenced premium course experience */
+.journey-banner{position:relative;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(220px,.78fr);gap:clamp(20px,4vw,50px);align-items:center;padding:clamp(25px,4vw,44px);margin:0 0 37px;border-radius:24px;background:radial-gradient(circle at 79% 4%,rgba(225,187,102,.2),transparent 38%),linear-gradient(125deg,#092c23,#15543d);color:#faf7ee;box-shadow:0 23px 50px rgba(10,48,34,.15);overflow:hidden}
+.journey-banner:after{content:"✧";position:absolute;right:-10px;bottom:-95px;font:350px Georgia,serif;line-height:1;color:rgba(245,216,156,.045);pointer-events:none}
+.journey-identity{display:flex;gap:20px;align-items:center;min-width:0;position:relative;z-index:1}
+.journey-emblem{width:66px;height:66px;border:1px solid rgba(232,205,149,.55);flex:none;border-radius:50%;display:grid;place-items:center;color:#f7dd9c;font-size:2rem}
+.journey-banner .eyebrow{color:#e5c58b;margin-bottom:9px}
+.journey-banner h2{font:700 clamp(1.6rem,3vw,2.25rem)/1.09 Georgia,serif;margin-bottom:9px}
+.journey-banner p{color:#d6e1d9;font-size:.85rem;line-height:1.6;margin:0}
+.journey-tracker{position:relative;z-index:1;background:rgba(255,255,255,.09);border:1px solid rgba(244,217,161,.22);border-radius:18px;padding:22px}
+.journey-numbers{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:14px}
+.journey-numbers span{color:#dae5db;font-size:.76rem}.journey-numbers strong{color:#f3dca7;font-size:.87rem}
+.journey-track{height:10px;border-radius:999px;background:rgba(255,255,255,.17);overflow:hidden}
+.journey-track span{display:block;width:0;height:100%;border-radius:inherit;background:linear-gradient(90deg,#bf8944,#f7dfad);transition:width .4s ease}
+.journey-tracker small{display:block;color:#e1e4d8;font-size:.73rem;margin-top:13px}
+.module{transition:transform .2s,border-color .2s,box-shadow .2s}
+.module:not(.module--locked):hover{transform:translateY(-3px);border-color:#c8ae78;box-shadow:0 24px 51px rgba(15,50,33,.15)}
+.module-state{display:inline-block;align-self:flex-start;font-size:.66rem;font-weight:900;letter-spacing:.05em;text-transform:uppercase;border-radius:999px;padding:7px 11px;margin-bottom:12px;color:#1c5b3c;background:#e8f3ea;border:1px solid #cee3d5}
+.module--locked{background:linear-gradient(150deg,#f8f8f4,#f3f2ec);border-color:#e9e7dc}
+.module--locked::before{background:#d6d8cc}.module--locked h3{color:#748477}
+.module--locked .module-state{color:#667570;border-color:#dbe1da;background:#edf0e9}
+.module--locked .module-icon{opacity:.45}.module--locked .module-open{background:#dadfd8;color:#66786b;border-color:#d2d8cd;opacity:1;cursor:not-allowed}
+.module--locked .module-files{opacity:.48}
+.module--done{border-color:#bdd7c6}
+.module--done .module-state{color:#12683c;background:#daf3e1;border-color:#b5ddc0}
+.module--done .module-open{background:#f5f9f5;color:#225b3d;border-color:#cadfd1}
+.module-open:disabled{opacity:1}
+.module-finish{margin-top:24px;border-radius:22px;padding:clamp(21px,3.5vw,34px);background:linear-gradient(145deg,#f2ebdc,#fcf9f0);border:1px solid #dfd0ab;display:grid;grid-template-columns:minmax(0,1.12fr) minmax(230px,.88fr);align-items:center;gap:24px}
+.module-finish .eyebrow{color:#a88043;margin-bottom:8px}
+.module-finish h3{font:700 1.65rem/1.12 Georgia,serif;margin:0 0 9px}
+.module-finish p{font-size:.84rem;color:#677469;line-height:1.7;margin:0}
+.finish-check{display:flex;align-items:flex-start;gap:13px;padding:17px 18px;background:#fffefa;border:1px solid #c7d7c8;border-radius:14px;cursor:pointer;color:#24563a;font-size:.87rem;font-weight:850;line-height:1.5}
+.finish-check input{appearance:auto;accent-color:#11653e;margin-top:2px;width:20px;height:20px;flex:none;cursor:pointer}
+.finish-check input:disabled{cursor:default}
+.finish-message{grid-column:1/-1;font-size:.83rem;font-weight:750;min-height:0;line-height:1.5}
+.module-finish .next-module-btn{grid-column:1/-1;border:0;border-radius:13px;padding:16px 18px;background:#0c5336;color:#fff8e9;font-weight:850;font-size:.89rem;display:flex;justify-content:space-between;align-items:center}
+.module-finish .next-module-btn[hidden]{display:none!important}
+.result-disclaimer{color:#7b806f;font-size:.71rem;margin-top:20px;max-width:830px}
+@media(max-width:800px){.journey-banner{grid-template-columns:1fr;gap:22px}.journey-tracker{width:100%}.module-finish{grid-template-columns:1fr;gap:15px}.finish-message,.module-finish .next-module-btn{grid-column:auto}}
+@media(max-width:520px){.journey-banner{padding:24px 20px}.journey-identity{gap:13px}.journey-emblem{width:47px;height:47px;font-size:1.6rem}.journey-banner h2{font-size:1.8rem}.journey-tracker{padding:18px}.module-finish{padding:22px 18px}}
