@@ -19,6 +19,10 @@ jobs:
           node --check assets/js/app.js
           node --check assets/js/config.js
           node --check portal/app.js
+          node --check portal/upload.js
+          test -f portal/upload.html
+          test -f portal/supabase/module-progress-20261023.sql
+          test -f portal/supabase/sequential-resource-gate-20261023.sql
           node --check portal/config.js
           test -f portal/supabase/schema.sql
           test -f portal/supabase/functions/cakto-webhook/index.ts
