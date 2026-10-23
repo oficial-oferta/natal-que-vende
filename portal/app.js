@@ -303,7 +303,7 @@
     toggle($('#premium-detail'), true);
     $('#premium-detail').scrollIntoView({behavior:'instant',block:'start'});
   }
-  for (const button of $('[data-premium-action]')) {
+  for (const button of $$('[data-premium-action]')) {
     button.addEventListener('click', () => {
       const slug = button.dataset.premiumAction;
       if (premiumOwned[slug]) return showPremiumDetail(slug);
@@ -313,7 +313,7 @@
   }
   $('#premium-detail-back').addEventListener('click', showOverview);
   $('#premium-refresh')?.addEventListener('click', () => refreshAccess());
-  for (const button of $('[data-open-module]')) {
+  for (const button of $$('[data-open-module]')) {
     button.addEventListener('click', () => openModule(Number(button.dataset.openModule)));
   }
   $('#module-back').addEventListener('click', () => {
