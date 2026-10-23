@@ -8,7 +8,7 @@ const browser = await chromium.launch({
 const source='http://127.0.0.1:8765/portal/';
 const resources=[{id:101,module_no:1,title:'Guia fictício do teste',resource_kind:'pdf',
  storage_path:'ci/no-real-file.pdf',external_url:null,sort_order:1}];
-async function openWithStub(allowed,width) {
+async function openWithStub(allowed,width,ownedSlug='') {
   const page=await browser.newPage({viewport:{width,height:890},reducedMotion:'reduce'});
   const errors=[];
   page.on('pageerror',e=>errors.push(e.message));
@@ -16,6 +16,9 @@ async function openWithStub(allowed,width) {
     'const finished=[];',
     'const allowed='+JSON.stringify(allowed)+';',
     'const resources='+JSON.stringify(resources)+';',
+    'const ownedSlug='+JSON.stringify(ownedSlug)+';',
+    "const premium=[{id:201,offer_slug:'recheios-premium',title:'Recheio simulado',resource_kind:'pdf',storage_path:'ci/recheio.pdf',published:true,sort_order:1}];",
+    "const offers=[{slug:'recheios-premium',checkout_url:null,price_label:'R$ 9,90',active:true},{slug:'kits-premium',checkout_url:null,price_label:'R$ 39,90',active:true}];",
     'window.supabase={createClient:()=>({',
     'auth:{',
     'onAuthStateChange:()=>({data:{subscription:{unsubscribe(){}}}}),',
@@ -24,13 +27,15 @@ async function openWithStub(allowed,width) {
     'signOut:async()=>({error:null})},',
     'rpc:async(name,args)=>{',
     "if(name==='has_natal_access')return {data:allowed,error:null};",
+    "if(name==='has_natal_premium')return {data:ownedSlug===args.p_slug,error:null};",
+    "if(name==='is_nqv_admin')return {data:false,error:null};",
     "if(name==='complete_natal_module'){const n=args.p_module_no;",
     "if(n>1&&!finished.includes(n-1))return {data:null,error:{message:'blocked'}};",
     'if(!finished.includes(n))finished.push(n);return {data:{completed:true},error:null};}',
     "return {data:null,error:{message:'unknown rpc'}};},",
     "from:(name)=>({select:()=>({",
-    "order:async()=>({data:name==='module_progress'?finished.map(module_no=>({module_no})):resources.filter(r=>r.module_no===1||finished.includes(r.module_no-1)),error:null}),",
-    "eq:()=>({order:async()=>({data:resources.filter(r=>r.module_no===1||finished.includes(r.module_no-1)),error:null})})",
+    "order:async()=>({data:name==='module_progress'?finished.map(module_no=>({module_no})):name==='natal_offers'?offers:name==='premium_resources'?(ownedSlug?premium:[]):resources.filter(r=>r.module_no===1||finished.includes(r.module_no-1)),error:null}),",
+    "eq:()=>({order:async()=>({data:name==='premium_resources'?(ownedSlug?premium:[]):resources.filter(r=>r.module_no===1||finished.includes(r.module_no-1)),error:null})})",
     '})}),',
     "storage:{from:()=>({createSignedUrl:async()=>({data:{signedUrl:'/fake-download'},error:null})})}",
     '})};'
@@ -55,6 +60,9 @@ try{
     const {page,errors}=await openWithStub(true,width);
     await page.locator('#member-library').waitFor({state:'visible'});
     assert.equal(await page.locator('.module').count(),5);
+    assert.equal(await page.locator('.premium-card').count(),2);
+    assert.equal(await page.locator('[data-premium-action="recheios-premium"]').isDisabled(),true);
+    assert.equal(await page.locator('[data-premium-action="kits-premium"]').isDisabled(),true);
     assert.equal(await page.locator('#journey-progress-label').innerText(),'0 de 5 concluídos');
     assert.equal(await page.locator('[data-open-module="2"]').isDisabled(),true);
     for(let n=1;n<=5;n++){
@@ -77,6 +85,18 @@ try{
     assert.equal(await page.locator('.module--done').count(),5);
     assert.deepEqual(errors,[]);
     console.log('PASS sequential completion and persistence UI '+width+'px');
+    await page.close();
+  }
+  // An independently bought bump must unlock only its own content, never the upsell.
+  for (const width of [390,1440]) {
+    const {page,errors}=await openWithStub(true,width,'recheios-premium');
+    await page.locator('#member-library').waitFor({state:'visible'});
+    assert.equal(await page.locator('[data-premium-action="recheios-premium"]').isEnabled(),true);
+    assert.equal(await page.locator('[data-premium-action="kits-premium"]').isDisabled(),true);
+    await page.locator('[data-premium-action="recheios-premium"]').click();
+    await page.locator('#premium-detail').waitFor({state:'visible'});
+    assert.equal(await page.locator('#premium-detail-files button.resource-button').count(),1);
+    assert.deepEqual(errors,[]);
     await page.close();
   }
 }finally{await browser.close()}
