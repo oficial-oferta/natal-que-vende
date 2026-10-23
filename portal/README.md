@@ -42,6 +42,32 @@ O Supabase Auth hospedado permite um template por tipo de mensagem, por exemplo 
 
 Referências oficiais: https://supabase.com/docs/guides/auth/auth-smtp e https://supabase.com/docs/guides/auth/auth-email-templates
 
+## Evolução da área de membros — 23/10/2026
+
+A biblioteca foi ampliada: cinco cartões clicáveis, cinco páginas internas individuais dentro do mesmo portal, um roteiro prático por módulo e uma área de recursos protegidos com links temporários. O login continua exigindo Supabase Auth; abrir qualquer módulo exige também `has_natal_access()` igual a `true`.
+
+**Banco preparado, arquivos ainda NÃO entregues:** cinco linhas de `public.resources` foram criadas, **todas com `published=false`**. São apenas os metadados/caminhos pretendidos; o Storage privado ainda precisa receber os PDFs/XLSX originais e o guia de modelos do Canva. Não altere `published` para `true` antes de testar o arquivo real e a permissão de download.
+
+| Módulo | Caminho previsto no bucket privado `natal-pago` |
+| --- | --- |
+| 01 — Guia Principal | `01/guia-principal.pdf` |
+| 02 — Os 5 Produtos de Natal | `02/os-5-produtos-de-natal.pdf` |
+| 03 — O Segredo das Encomendas | `03/o-segredo-das-encomendas.pdf` |
+| 04 — Guia final de links Canva | `04/guia-de-acesso-canva.pdf` |
+| 05 — Controle Seu Lucro | `05/controle-seu-lucro.xlsx` |
+
+O Módulo 04 depende da emissão/validação dos **30 links oficiais de template do Canva**. Nunca publique a pasta editável interna ou link de edição do proprietário como link de comprador.
+
+**Fluxo de acesso (produção futura):** pagamento Cakto aprovado → webhook assinado e validado → `public.access_orders.status = 'paid'` por pedido → convite enviado ao e-mail da compra → cliente define senha → Supabase Auth identifica o usuário → RPC `public.has_natal_access()` verifica o e-mail autenticado em `auth.users` contra pedidos aprovados → portal busca `resources` publicados e Storage emite URLs assinadas com validade curta. Sem registro de pedido aprovado, entrar na conta NÃO libera o material.
+
+**Testes da interface:** `tests/portal-smoke.mjs` valida 7 tamanhos de tela sem login; `tests/portal-membership.mjs` injeta um Supabase *simulado somente no navegador do CI*, confirmando bloqueio de usuário sem pagamento e as cinco páginas internas para usuário simulado autorizado em celular e desktop. **Isso não substitui o teste de checkout real ou a validação do webhook da Cakto**.
+
+### Comunicação automática
+
+- Três versões A/B/C de convite estão guardadas em `portal/supabase/email-templates/invite-alternatives/` para seleção **manual e planejada**. Não habilitar alternância aleatória para contornar spam.
+- Também existem templates separados de **convite**, **link de acesso** e **recuperação de senha**. A configuração ativa do Supabase permite um modelo por evento; os HTMLs arquivados no GitHub não são implantados automaticamente no painel.
+- Evite conteúdo promocional, convites repetidos sem motivo e mudanças frequentes de copy. Migre do Gmail para serviço transacional com domínio verificado antes de aumentar o volume.
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
