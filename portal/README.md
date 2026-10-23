@@ -20,6 +20,28 @@ Foi realizado um convite único real via `supabase.auth.admin.inviteUserByEmail`
 
 **Ação do proprietário:** gerar uma **nova senha de aplicativo do Google** na conta remetente (verificação em duas etapas ativa), abrir o [SMTP do projeto](https://supabase.com/dashboard/project/dvpmypjeabbzfvdzalow/auth/smtp) e substituir exclusivamente a senha, verificando que o usuário é `acesso.natalquevende@gmail.com`. Host: `smtp.gmail.com`, porta: `465` SSL ou `587` STARTTLS conforme campo. Nunca usar senha normal do Gmail e nunca compartilhar a senha de aplicativo no chat ou repositório. Confirmar e então refazer um único convite via dashboard ou por mecanismo seguro de backend. Consulte [Ajuda Google — Senhas de app](https://support.google.com/accounts/answer/185833?hl=pt-BR).
 
+## Estratégia de entregabilidade dos convites (23/10/2026)
+
+**Decisão:** manter e-mails de autenticação simples, transacionais e estáveis. **Não implementar rotação aleatória de assunto ou corpo para tentar contornar filtros antispam.** A documentação do Supabase recomenda alterar modelos com pouca frequência e manter autenticação separada de campanhas de marketing. Três alternativas de **convite inicial** foram preparadas para revisão/experimentos futuros, mas **nenhuma foi aplicada automaticamente** nem substitui o convite ativo:
+
+| Alternativa | Assunto sugerido | HTML arquivado |
+| --- | --- | --- |
+| A (objetiva) | Ative seu acesso ao Natal que Vende | `portal/supabase/email-templates/invite-alternatives/invite-a.html` |
+| B (acolhedora) | Convite de acesso \| Natal que Vende | `portal/supabase/email-templates/invite-alternatives/invite-b.html` |
+| C (passo a passo) | Natal que Vende: crie sua senha de acesso | `portal/supabase/email-templates/invite-alternatives/invite-c.html` |
+
+O Supabase Auth hospedado permite um template por tipo de mensagem, por exemplo `Invite user`, `Magic link` e `Recovery`. Para alternar dinamicamente cada mensagem seria necessária outra arquitetura (por exemplo, custom Send Email Hook). **Não há necessidade de fazê-lo neste lançamento.** Os três templates funcionais por evento já estão guardados em `portal/supabase/email-templates/`.
+
+**Boas práticas de envio legítimo:**
+- Convites somente após compra confirmada ou para testes explicitamente autorizados; sem disparos em massa para listas desconhecidas.
+- Um convite automático por compra/conta quando necessário, com controle de repetição/reenvio; não bombardear o cliente com mensagens iguais.
+- Corpo claro, único botão para o link seguro `{{ .ConfirmationURL }}`, assunto objetivo, sem promoções, anexos ou excesso de links/imagens.
+- Monitorar erros no Supabase Auth, devoluções e reclamações, testar recebimento em mais de um provedor. Não presumir que HTTP 200 equivale a mensagem recebida na caixa principal.
+- Checar limite inicial do Supabase (30 e-mails/h com custom SMTP conforme documentação) **e** limites/risco de bloqueio do Gmail pessoal. Migrar para SMTP transacional com domínio próprio antes de aumentar significativamente os anúncios.
+- A troca de template deve ser deliberada, com testes e período de avaliação; não fazer alterações a cada compra.
+
+Referências oficiais: https://supabase.com/docs/guides/auth/auth-smtp e https://supabase.com/docs/guides/auth/auth-email-templates
+
 ## Estado atual
 
 - [x] Interface responsiva de login, recuperação de senha e definição de senha no primeiro acesso.
