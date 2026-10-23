@@ -116,3 +116,29 @@ h1,h2,h3{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spac
 @media(max-width:800px){.hero-grid{grid-template-columns:1fr;padding-top:52px;gap:47px}.hero h1{max-width:720px}.hero-art{max-width:555px;width:100%;margin:0 auto}.hero-copy{max-width:700px}.difference-grid{grid-template-columns:1fr;gap:13px}.difference-card{padding:24px}.difference-card h3{margin-top:14px}.showcase-grid,.offer-grid,.faq-grid{grid-template-columns:1fr}.showcase-photo{max-width:495px;width:87%;margin:0 auto}.showcase-copy{max-width:700px}.checkout-card{max-width:545px;width:100%;margin:0 auto}.trust-row{gap:8px}.trust-row>div{gap:9px;padding:5px 8px}.trust-row strong{font-size:.74rem}.trust-row small{font-size:.65rem}.faq-grid{gap:18px}.section{padding:73px 0}}
 @media(max-width:540px){.wrap{width:min(100% - 32px,1190px)}.preheader{font-size:.53rem;letter-spacing:.09em}.header-inner{min-height:71px}.brand img{width:75px;height:65px}.header-assurance{font-size:.68rem}.header-assurance strong{font-size:.72rem}.hero-grid{padding-top:39px;padding-bottom:48px;gap:41px}.hero h1{font-size:clamp(2.25rem,9.2vw,3.05rem)}.hero-lead{font-size:.91rem;line-height:1.7}.preheadline{font-size:.83rem}.hero-facts{gap:7px}.hero-facts span{font-size:.68rem;padding:9px 10px}.hero-art{padding-right:18px}.art-frame{border-radius:20px 50px 20px 50px}.art-main{border-radius:14px 43px 14px 43px}.art-ticket{right:-7px;top:16px;max-width:160px;padding:10px;font-size:.62rem}.art-ticket strong{font-size:.7rem}.art-accent{border-width:5px;left:-10px;bottom:-25px}.art-caption{margin-top:22px}.trust-row{grid-template-columns:1fr;gap:0;padding:11px 0}.trust-row>div{border-right:0;border-bottom:1px solid #dfd0ad;justify-content:flex-start;min-height:55px;padding:6px 9px}.trust-row>div:last-child{border-bottom:0}.trust-ico{height:30px;width:30px}.section{padding:58px 0}.section-intro h2,.showcase h2,.offer-copy h2,.faq h2{font-size:2.1rem}.showcase-photo{width:91%;margin-left:0}.showcase-seal{width:112px;height:112px;right:-27px;bottom:12px}.showcase-seal strong{font-size:.94rem}.quote-inner p{font-size:1.37rem}.quote-section{padding:48px 0}.checkout-card{padding-left:21px;padding-right:21px}.footer-grid{min-height:165px;flex-wrap:wrap;gap:5px;padding:20px 0}.footer p{order:3;width:100%;margin:0}.header-assurance{max-width:177px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition-duration:0s!important;animation-duration:0s!important}}
+
+/* Native Cakto upsell controls (Shadow DOM parts exposed by the official widget).
+   Keep all payment/acceptance logic inside the Cakto script. */
+cakto-upsell-buttons{display:grid;gap:11px;align-items:stretch;width:100%}
+cakto-upsell-accept,cakto-upsell-reject{display:block;width:100%}
+cakto-upsell-accept::part(button){
+ width:100%;min-height:64px;padding:15px 22px;
+ background:linear-gradient(120deg,#166c40,#0d5434)!important;
+ color:#fffdf5!important;border:1px solid #2b7b51!important;
+ box-shadow:0 14px 28px rgba(15,82,48,.21)!important;
+ border-radius:12px!important;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ font-size:.93rem!important;font-weight:850!important;line-height:1.5!important;
+ cursor:pointer
+}
+cakto-upsell-accept::part(button):hover{filter:brightness(1.1)}
+cakto-upsell-accept::part(button):focus-visible,cakto-upsell-reject::part(button):focus-visible{outline:3px solid #cda657;outline-offset:3px}
+cakto-upsell-reject::part(button){
+ width:100%;padding:13px 8px;background:transparent!important;
+ border:0!important;box-shadow:none!important;
+ color:#6c766e!important;text-decoration:underline;text-underline-offset:4px;
+ font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
+ font-weight:650!important;font-size:.82rem!important;
+ cursor:pointer
+}
+@media(max-width:540px){cakto-upsell-accept::part(button){min-height:67px;padding:14px 11px;font-size:.85rem!important}}
