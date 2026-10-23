@@ -82,6 +82,7 @@
     toggle(logoutButton, false);
     currentUserId = null;
     completedModules = [];
+    toggle($('#owner-publication-link'), false);
     toggle(passwordCard, false);
     toggle(library, false);
     toggle(accessDenied, false);
@@ -295,6 +296,7 @@
       const { data: allowed, error: accessError } = await client.rpc('has_natal_access');
       if (accessError) throw new Error('Não foi possível verificar a compra. Tente novamente.');
       if (!allowed) {
+        toggle($('#owner-publication-link'), false);
         toggle(library, false);
         toggle(accessDenied, true);
         showAccessNotice('');
@@ -311,6 +313,9 @@
       completedModules = (progress || []).map(row => Number(row.module_no)).filter(n => n>=1 && n<=5);
       renderResources(files || []);
       renderProgress();
+      // Show the upload area exclusively to the verified owner.
+      const { data: isOwner } = await client.rpc('is_nqv_admin');
+      toggle($('#owner-publication-link'), isOwner === true);
       showOverview();
       toggle(accessDenied, false);
       toggle(library, true);
