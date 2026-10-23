@@ -52,6 +52,13 @@
   let publishedResources = [];
   let completedModules = [];
   let activeModule = 1;
+  let premiumOwned = {};
+  let premiumOffers = [];
+  let premiumResources = [];
+  const premiumDescriptions = Object.freeze({
+    'recheios-premium': 'Receitas especiais, combinações e aplicações práticas para ampliar as opções de doces natalinos.',
+    'kits-premium': 'Propostas de kits presenteáveis, montagem, orçamento e apresentação comercial para encomendas de Natal.'
+  });
 
   let client = null;
   let currentUserId = null;
@@ -82,6 +89,9 @@
     toggle(logoutButton, false);
     currentUserId = null;
     completedModules = [];
+    premiumOwned = {};
+    premiumOffers = [];
+    premiumResources = [];
     toggle($('#owner-publication-link'), false);
     toggle(passwordCard, false);
     toggle(library, false);
@@ -171,6 +181,8 @@
     }
   }
   function showOverview() {
+    toggle($('#premium-shelf'), true);
+    toggle($('#premium-detail'), false);
     toggle(moduleGrid, true);
     toggle(memberHeading, true);
     toggle(libraryIntro, true);
@@ -216,6 +228,8 @@
     next.hidden = !done || number === 5;
     next.dataset.next = number + 1;
     if (number === 5 && done) say($('#module-completion-message'), 'Parabéns! Você concluiu toda a jornada Natal que Vende.');
+    toggle($('#premium-shelf'), false);
+    toggle($('#premium-detail'), false);
     toggle(moduleGrid, false);
     toggle(memberHeading, false);
     toggle(libraryIntro, false);
@@ -240,7 +254,66 @@
     say($('[data-resource-count]'), '5 módulos · ' + publishedResources.length +
       (publishedResources.length === 1 ? ' arquivo publicado' : ' arquivos publicados'));
   }
-  for (const button of $$('[data-open-module]')) {
+  function verifiedCheckoutUrl(input) {
+    if (!input) return null;
+    try {
+      const address = new URL(input);
+      return address.protocol === 'https:' ? address.href : null;
+    } catch { return null; }
+  }
+  function renderPremium() {
+    for (const slug of ['recheios-premium','kits-premium']) {
+      const row = premiumOffers.find(offer=>offer.slug===slug);
+      const owned = premiumOwned[slug] === true;
+      const count = premiumResources.filter(r=>r.offer_slug===slug).length;
+      const status = $('[data-premium-status="' + slug + '"]');
+      const action = $('[data-premium-action="' + slug + '"]');
+      const card = $('[data-premium="' + slug + '"]');
+      const url = verifiedCheckoutUrl(row?.checkout_url);
+      action.disabled = true;
+      action.dataset.premiumAction = slug;
+      if (owned) {
+        card.classList.add('premium-card--owned');
+        status.textContent = count ? '✓ Acesso liberado' : '✓ Adquirido · material em preparação';
+        action.textContent = count ? 'Abrir meu conteúdo ↗' : 'Aguardando publicação do conteúdo';
+        action.disabled = !count;
+      } else {
+        card.classList.remove('premium-card--owned');
+        status.textContent = url ? '🔒 Adicional não adquirido' : '🔒 Em breve no checkout';
+        action.textContent = url ? 'Adquirir por ' + (row?.price_label || '') + ' ↗' : 'Compra disponível em breve';
+        action.disabled = !url;
+      }
+    }
+  }
+  function showPremiumDetail(slug) {
+    if (!premiumOwned[slug]) return;
+    const rows = premiumResources.filter(r=>r.offer_slug===slug);
+    if (!rows.length) return;
+    say($('#premium-detail-title'), slug==='recheios-premium'?'Segredos do Recheio Premium':'Natal que Vende PRO — Presentes de Alto Valor');
+    say($('#premium-detail-lead'), premiumDescriptions[slug]);
+    const container = $('#premium-detail-files');
+    container.replaceChildren();
+    for (const resource of rows) container.append(createResourceButton(resource));
+    toggle($('#premium-shelf'), false);
+    toggle(moduleGrid, false);
+    toggle(memberHeading, false);
+    toggle(libraryIntro, false);
+    toggle(bottomAdvice, false);
+    toggle(moduleDetail, false);
+    toggle($('#premium-detail'), true);
+    $('#premium-detail').scrollIntoView({behavior:'instant',block:'start'});
+  }
+  for (const button of $('[data-premium-action]')) {
+    button.addEventListener('click', () => {
+      const slug = button.dataset.premiumAction;
+      if (premiumOwned[slug]) return showPremiumDetail(slug);
+      const url = verifiedCheckoutUrl(premiumOffers.find(offer=>offer.slug===slug)?.checkout_url);
+      if (url) window.open(url,'_blank','noopener,noreferrer');
+    });
+  }
+  $('#premium-detail-back').addEventListener('click', showOverview);
+  $('#premium-refresh')?.addEventListener('click', () => refreshAccess());
+  for (const button of $('[data-open-module]')) {
     button.addEventListener('click', () => openModule(Number(button.dataset.openModule)));
   }
   $('#module-back').addEventListener('click', () => {
@@ -313,6 +386,22 @@
       completedModules = (progress || []).map(row => Number(row.module_no)).filter(n => n>=1 && n<=5);
       renderResources(files || []);
       renderProgress();
+      const premiumSlugs = ['recheios-premium','kits-premium'];
+      const ownedResults = await Promise.all(premiumSlugs.map(slug =>
+        client.rpc('has_natal_premium', {p_slug: slug})
+      ));
+      if (ownedResults.some(r=>r.error)) throw new Error('Não foi possível conferir seus conteúdos extras.');
+      premiumOwned = Object.fromEntries(premiumSlugs.map((slug,i)=>[slug,ownedResults[i].data === true]));
+      const { data: offers, error: offersError } = await client.from('natal_offers')
+        .select('slug,checkout_url,price_label,active').order('sort_order',{ascending:true});
+      if (offersError) throw new Error('Não foi possível carregar os extras.');
+      premiumOffers = (offers || []).filter(offer=>offer.active && premiumSlugs.includes(offer.slug));
+      const { data: pFiles, error: pFilesError } = await client.from('premium_resources')
+        .select('id,offer_slug,title,resource_kind,storage_path,published,sort_order')
+        .eq('published',true).order('sort_order',{ascending:true});
+      if (pFilesError) throw new Error('Não foi possível consultar os materiais premium.');
+      premiumResources = pFiles || [];
+      renderPremium();
       // Show the upload area exclusively to the verified owner.
       const { data: isOwner } = await client.rpc('is_nqv_admin');
       toggle($('#owner-publication-link'), isOwner === true);
