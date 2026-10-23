@@ -50,6 +50,8 @@
     }
   });
   let publishedResources = [];
+  let completedModules = [];
+  let activeModule = 1;
 
   let client = null;
   let currentUserId = null;
@@ -79,6 +81,7 @@
     toggle(portalScreen, false);
     toggle(logoutButton, false);
     currentUserId = null;
+    completedModules = [];
     toggle(passwordCard, false);
     toggle(library, false);
     toggle(accessDenied, false);
@@ -139,6 +142,33 @@
     });
     return button;
   }
+  function nextUnlockedModule() {
+    let next = 1;
+    while (next <= 5 && completedModules.includes(next)) next++;
+    return Math.min(next, 5);
+  }
+  function renderProgress() {
+    const done = completedModules.length;
+    const unlocked = nextUnlockedModule();
+    say($('#journey-progress-label'), done + ' de 5 concluídos');
+    $('#journey-progress-track').setAttribute('aria-valuenow', String(done));
+    $('#journey-progress-fill').style.width = (done / 5 * 100) + '%';
+    say($('#journey-next-step'), done === 5 ? 'Jornada concluída! Você pode revisar todos os materiais.' :
+      'Próxima etapa: Módulo ' + String(unlocked).padStart(2, '0'));
+    for (let number=1;number<=5;number++) {
+      const card = $('[data-module="' + number + '"]');
+      const state = $('[data-module-state="' + number + '"]');
+      const button = $('[data-open-module="' + number + '"]');
+      const isDone = completedModules.includes(number);
+      const locked = number > unlocked && !isDone;
+      card.classList.toggle('module--locked', locked);
+      card.classList.toggle('module--done', isDone);
+      state.textContent = isDone ? '✓ Concluído' : locked ? '🔒 Bloqueado' : '✦ Disponível';
+      button.disabled = locked;
+      button.setAttribute('aria-disabled', String(locked));
+      button.firstChild.textContent = locked ? 'Conclua a etapa anterior ' : isDone ? 'Rever módulo ' : 'Explorar módulo ';
+    }
+  }
   function showOverview() {
     toggle(moduleGrid, true);
     toggle(memberHeading, true);
@@ -148,7 +178,8 @@
   }
   function openModule(number) {
     const plan = modulePlans[number];
-    if (!plan || library.hidden || !currentUserId) return;
+    if (!plan || library.hidden || !currentUserId || (number > nextUnlockedModule() && !completedModules.includes(number))) return;
+    activeModule = number;
     say($('#detail-eyebrow'), plan.tag);
     say($('#detail-title'), plan.title);
     say($('#detail-lead'), plan.lead);
@@ -173,6 +204,17 @@
         : 'Este módulo já tem sua estrutura pronta. Os arquivos serão disponibilizados aqui quando forem publicados.';
       downloads.append(placeholder);
     }
+    const done = completedModules.includes(number);
+    const check = $('#module-completion-check');
+    check.checked = done;
+    check.disabled = done;
+    check.closest('label').querySelector('span').textContent =
+      done ? 'Etapa concluída! Seu progresso foi salvo.' : 'Concluí este módulo e quero continuar';
+    say($('#module-completion-message'), done ? 'Você concluiu esta etapa. Pode revisá-la quando quiser.' : '');
+    const next = $('#next-module-btn');
+    next.hidden = !done || number === 5;
+    next.dataset.next = number + 1;
+    if (number === 5 && done) say($('#module-completion-message'), 'Parabéns! Você concluiu toda a jornada Natal que Vende.');
     toggle(moduleGrid, false);
     toggle(memberHeading, false);
     toggle(libraryIntro, false);
@@ -204,6 +246,39 @@
     showOverview();
     memberHeading.scrollIntoView({ behavior: 'instant', block: 'start' });
   });
+  $('#next-module-btn').addEventListener('click', () => {
+    const target = Number($('#next-module-btn').dataset.next);
+    if (Number.isInteger(target)) openModule(target);
+  });
+  $('#module-completion-check').addEventListener('change', async () => {
+    const input = $('#module-completion-check');
+    if (!input.checked || !client || completedModules.includes(activeModule)) return;
+    input.disabled = true;
+    say($('#module-completion-message'), 'Salvando sua conclusão...');
+    try {
+      const number = activeModule;
+      const { error } = await client.rpc('complete_natal_module', { p_module_no: number });
+      if (error) throw new Error('Não foi possível salvar seu progresso. Tente novamente.');
+      const { data: progress, error: progressError } = await client.from('module_progress')
+        .select('module_no').order('module_no', { ascending: true });
+      if (progressError) throw progressError;
+      completedModules = (progress || []).map(row => Number(row.module_no));
+      const { data: files, error: resourceError } = await client.from('resources')
+        .select('id,module_no,title,resource_kind,storage_path,external_url,sort_order')
+        .eq('published', true).order('sort_order', { ascending: true });
+      if (resourceError) throw resourceError;
+      renderResources(files || []);
+      renderProgress();
+      openModule(number);
+      say($('#module-completion-message'), number === 5 ?
+        'Parabéns! Sua jornada foi concluída.' :
+        'Etapa salva! O próximo módulo está liberado.');
+    } catch (error) {
+      input.checked = false;
+      input.disabled = false;
+      say($('#module-completion-message'), error?.message || 'Não foi possível salvar.');
+    }
+  });
   async function refreshAccess() {
     if (!client || isChecking) return;
     isChecking = true;
@@ -230,7 +305,12 @@
         .eq('published', true)
         .order('sort_order', { ascending: true });
       if (filesError) throw new Error('Não foi possível carregar os materiais. Atualize a página.');
+      const { data: progress, error: progressError } = await client.from('module_progress')
+        .select('module_no').order('module_no', { ascending: true });
+      if (progressError) throw new Error('Não foi possível consultar seu progresso.');
+      completedModules = (progress || []).map(row => Number(row.module_no)).filter(n => n>=1 && n<=5);
       renderResources(files || []);
+      renderProgress();
       showOverview();
       toggle(accessDenied, false);
       toggle(library, true);
