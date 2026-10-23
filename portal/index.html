@@ -106,6 +106,20 @@
           <p class="caption">Caso a compra esteja aprovada e o acesso não apareça, contate o suporte informado no recibo da compra.</p>
         </div>
         <div id="member-library" hidden>
+          <section class="journey-banner" aria-label="Seu progresso no Natal que Vende">
+            <div class="journey-identity">
+              <div class="journey-emblem" aria-hidden="true">✦</div>
+              <div><span class="eyebrow">SUA JORNADA DE NATAL</span>
+                <h2>Uma etapa de cada vez.</h2>
+                <p>Acompanhe seu avanço: marque cada módulo como concluído para liberar o próximo.</p>
+              </div>
+            </div>
+            <div class="journey-tracker">
+              <div class="journey-numbers"><span>Seu progresso</span><strong id="journey-progress-label">0 de 5 concluídos</strong></div>
+              <div class="journey-track" role="progressbar" aria-label="Progresso dos módulos" aria-valuemin="0" aria-valuemax="5" aria-valuenow="0" id="journey-progress-track"><span id="journey-progress-fill"></span></div>
+              <small id="journey-next-step">Comece pelo Módulo 01</small>
+            </div>
+          </section>
           <div class="member-heading">
             <div><span class="eyebrow">SUA BIBLIOTECA DIGITAL</span><h2>Meus materiais</h2>
               <p>Escolha um módulo para visualizar os recursos disponíveis e estudar no seu ritmo.</p></div>
@@ -114,6 +128,7 @@
           <div class="library-intro" id="library-intro"><span aria-hidden="true">✧</span><div><strong>Seu conteúdo, no seu ritmo.</strong><p>Abra um módulo para ver instruções, materiais e links disponíveis. Recomendamos começar pelo primeiro.</p></div></div>
           <div class="modules-grid" id="modules-grid">
             <article class="module" data-module="1">
+              <span class="module-state" data-module-state="1">Aguardando</span>
               <div class="module-top"><span class="module-index">01</span><span class="module-type">GUIA INICIAL</span></div>
               <div class="module-icon">✧</div>
               <h3>Comece por Aqui</h3>
@@ -122,6 +137,7 @@
               <button type="button" class="module-open" data-open-module="1" aria-label="Abrir módulo 01">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="2">
+              <span class="module-state" data-module-state="2">Aguardando</span>
               <div class="module-top"><span class="module-index">02</span><span class="module-type">RECEITAS</span></div>
               <div class="module-icon">✿</div>
               <h3>Os 5 Produtos de Natal</h3>
@@ -130,14 +146,16 @@
               <button type="button" class="module-open" data-open-module="2" aria-label="Abrir módulo 02">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="3">
+              <span class="module-state" data-module-state="3">Aguardando</span>
               <div class="module-top"><span class="module-index">03</span><span class="module-type">VENDAS E ENCOMENDAS</span></div>
               <div class="module-icon">✉</div>
               <h3>O Segredo das Encomendas</h3>
-              <p>Organize divulgação, conversas e confirmações de pedido.</p>
+              <p><strong>O segredo das vendas:</strong> conquiste mais clientes e planeje sua meta de até R$ 3 mil por semana em faturamento.*</p>
               <div class="module-files" data-resources="3"></div>
               <button type="button" class="module-open" data-open-module="3" aria-label="Abrir módulo 03">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="4">
+              <span class="module-state" data-module-state="4">Aguardando</span>
               <div class="module-top"><span class="module-index">04</span><span class="module-type">DESIGN EDITÁVEL</span></div>
               <div class="module-icon">❖</div>
               <h3>Kit Natal que Vende</h3>
@@ -146,6 +164,7 @@
               <button type="button" class="module-open" data-open-module="4" aria-label="Abrir módulo 04">Explorar módulo <span aria-hidden="true">→</span></button>
             </article>
             <article class="module" data-module="5">
+              <span class="module-state" data-module-state="5">Aguardando</span>
               <div class="module-top"><span class="module-index">05</span><span class="module-type">PLANILHA</span></div>
               <div class="module-icon">▤</div>
               <h3>Controle Seu Lucro</h3>
@@ -178,7 +197,21 @@
                 <p class="files-footnote">Precisa abrir no celular? Os PDFs e planilhas podem ser visualizados ou salvos no seu aparelho. Links do Canva abrem diretamente no editor.</p>
               </div>
             </div>
+            <div class="module-finish">
+              <div class="module-finish-lead">
+                <span class="eyebrow">CONTINUE SUA JORNADA</span>
+                <h3>Pronta para o próximo passo?</h3>
+                <p>Depois de estudar e praticar, confirme a conclusão desta etapa. O próximo módulo será liberado automaticamente na sua conta.</p>
+              </div>
+              <label class="finish-check" for="module-completion-check">
+                <input type="checkbox" id="module-completion-check">
+                <span>Concluí este módulo e quero continuar</span>
+              </label>
+              <p id="module-completion-message" class="finish-message" aria-live="polite"></p>
+              <button class="next-module-btn" id="next-module-btn" type="button" hidden>Continuar para o próximo módulo <span aria-hidden="true">→</span></button>
+            </div>
           </section>
+          <p class="result-disclaimer">*R$ 3 mil/semana é uma meta ilustrativa de faturamento, não promessa de vendas. Resultado depende de preço, demanda, custos e capacidade.</p>
           <div class="bottom-advice"><strong>Uma dica para sua jornada</strong><p>Comece pelo Módulo 01, estude os produtos antes de produzir e use a planilha para acompanhar os custos. Uma meta de faturamento é planejamento, não resultado garantido.</p></div>
         </div>
       </div>
