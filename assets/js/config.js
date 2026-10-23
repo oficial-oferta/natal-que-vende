@@ -3,7 +3,7 @@
  * Edite somente este arquivo para ativar preço, checkout, vídeo, Pixel e links legais.
  */
 window.NQV_CONFIG = {
-  CHECKOUT_URL: "",
+  CHECKOUT_URL: "https://pay.cakto.com.br/5ymryom_1235383",
   PRICE_LABEL: "R$ 19,90",
   PRICE_NOTE: "À vista R$ 19,90 ou 4x de R$ 5,63 no cartão (total R$ 22,52). Parcelamento com acréscimo.",
   INSTALLMENTS_COUNT: 4,
