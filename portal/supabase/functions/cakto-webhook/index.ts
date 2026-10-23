@@ -4,7 +4,7 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const secret = Deno.env.get("CAKTO_WEBHOOK_SECRET") || "";
-const allowedProductId = Deno.env.get("CAKTO_PRODUCT_ID") || "";
+// Product IDs are allowlisted in public.natal_offers by the verified store owner.
 const portalUrl = Deno.env.get("PORTAL_URL") || "";
 const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
 const adminKey = Deno.env.get("SUPABASE_SECRET_KEY") || Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -64,8 +64,13 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
     .select("email,product_id,invite_sent_at,status").eq("order_id", orderId).maybeSingle();
   const incomingProduct = productId(data);
   const currentProduct = incomingProduct || (event !== "purchase_approved" ? previous?.product_id : "");
-  if (currentProduct && currentProduct !== allowedProductId) return json({ status: "ignored_other_product" });
   if (!currentProduct) return json({ error: "missing_product_id" }, 422);
+  const { data: mappedOffer, error: offerError } = await admin.from("natal_offers")
+    .select("slug,kind,active").eq("cakto_product_id", currentProduct).maybeSingle();
+  if (offerError) return json({ error: "product_lookup_failed" }, 503);
+  if (!mappedOffer || mappedOffer.active !== true) {
+    return json({ status: "ignored_unregistered_product" });
+  }
   const email = String(data.customer?.email || previous?.email || "").trim().toLowerCase();
   if (!/^\S+@\S+\.\S+$/.test(email) || email.length > 320) {
     return json({ error: "invalid_customer_email" }, 422);
@@ -78,7 +83,7 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
   const newStatus = event === "purchase_approved" ? "paid" :
     event === "refund" ? "refunded" : "chargeback";
   const { error: storeError } = await admin.rpc("ingest_cakto_order", {
-    p_order_id: orderId, p_email: email, p_product_id: allowedProductId, p_status: newStatus
+    p_order_id: orderId, p_email: email, p_product_id: currentProduct, p_status: newStatus
   });
   if (storeError) return json({ error: "database_error" }, 503);
   if (newStatus !== "paid") return json({ status: "access_revoked" });
@@ -94,7 +99,7 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
   // NUNCA se manda senha em texto puro por e-mail.
   const { error: inviteError } = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: portalUrl,
-    data: { origin: "cakto", product: "natal-que-vende", email_variant: selectInviteVariant(orderId) }
+    data: { origin: "cakto", product: mappedOffer.slug, email_variant: selectInviteVariant(orderId) }
   });
   if (inviteError) {
     // Uma cliente que já tem conta não recebe novo convite do Supabase.
@@ -116,7 +121,7 @@ async function processOneOrder(data: any, event: string, admin: any): Promise<Re
 
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json({ error: "method_not_allowed" }, 405);
-  if (![secret, allowedProductId, portalUrl, supabaseUrl, adminKey].every(Boolean)) {
+  if (![secret, portalUrl, supabaseUrl, adminKey].every(Boolean)) {
     return json({ error: "not_configured" }, 503);
   }
   // A requisição chega do servidor da Cakto, não do navegador.
