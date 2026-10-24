@@ -40,8 +40,8 @@
     },
     4: {
       tag: 'MÓDULO 04 · MATERIAIS EDITÁVEIS', title: 'Kit Natal que Vende',
-      lead: 'Seu kit de comunicação no Canva: cardápios, catálogo, posts, Stories, ofertas, tags e orçamentos. Os links oficiais de cópia precisam ser publicados e validados antes da entrega.',
-      steps: ['Abra o guia de acesso quando ele estiver disponível nesta página.', 'Use os links oficiais de modelo para criar sua própria cópia no Canva.', 'Personalize os layouts com produtos, preços, fotos e dados do seu negócio.']
+      lead: 'Seu kit de comunicação no Canva: cardápios, catálogo, posts, Stories, ofertas, tags e orçamentos. Escolha cada modelo, faça sua própria cópia e personalize com a identidade do seu negócio.',
+      steps: ['Entre na sua conta do Canva (a versão gratuita também pode ser usada).', 'Escolha um dos modelos abaixo e abra o link em uma nova aba.', 'No Canva, selecione Arquivo → Fazer uma cópia. Não edite o modelo original.', 'Na sua cópia, substitua fotos, textos, preços e contatos antes de baixar a arte.']
     },
     5: {
       tag: 'MÓDULO 05 · ORGANIZAÇÃO FINANCEIRA', title: 'Controle Seu Lucro',
@@ -113,7 +113,7 @@
       const raw = String(row.external_url || '');
       let url;
       try { url = new URL(raw); } catch { throw new Error('Link do Canva ainda não publicado.'); }
-      if (url.protocol !== 'https:' || !/(^|\.)canva\.com$/.test(url.hostname)) {
+      if (url.protocol !== 'https:' || !(url.hostname === 'canva.link' || /(^|\.)canva\.com$/.test(url.hostname))) {
         throw new Error('Link do Canva inválido. Solicite suporte.');
       }
       return url.href;
@@ -208,7 +208,40 @@
     downloads.replaceChildren();
     const rows = publishedResources.filter(row => Number(row.module_no) === number);
     if (rows.length) {
-      for (const row of rows) downloads.append(createResourceButton(row));
+      if (number === 4) {
+        const guide = document.createElement('aside');
+        guide.className = 'canva-copy-guide';
+        const guideTitle = document.createElement('strong');
+        guideTitle.textContent = 'Como usar os modelos no Canva';
+        const guideText = document.createElement('p');
+        guideText.textContent = 'Abra o modelo desejado e, já conectada à sua conta Canva, vá em Arquivo → Fazer uma cópia. Personalize sua cópia com as fotos, preços e informações da sua marca. Não solicite acesso de edição ao arquivo original.';
+        guide.append(guideTitle, guideText);
+        downloads.append(guide);
+        const categoryNames = {
+          A: '01 · Cardápios e catálogo', B: '02 · Posts para Instagram',
+          C: '03 · Stories e status', D: '04 · Ofertas e combos',
+          E: '05 · Tags e cartões', F: '06 · Orçamentos e confirmações'
+        };
+        let currentCategory = null;
+        let currentList = null;
+        for (const row of rows) {
+          const category = /^[A-F]\d{2}\s*[·—-]/.exec(row.title || '')?.[0]?.[0] || 'OUTROS';
+          if (category !== currentCategory) {
+            currentCategory = category;
+            const section = document.createElement('section');
+            section.className = 'canva-resource-group';
+            const heading = document.createElement('h4');
+            heading.textContent = categoryNames[category] || 'Mais modelos';
+            currentList = document.createElement('div');
+            currentList.className = 'canva-resource-list';
+            section.append(heading, currentList);
+            downloads.append(section);
+          }
+          currentList.append(createResourceButton(row));
+        }
+      } else {
+        for (const row of rows) downloads.append(createResourceButton(row));
+      }
     } else {
       const placeholder = document.createElement('p');
       placeholder.className = 'resource-empty';
