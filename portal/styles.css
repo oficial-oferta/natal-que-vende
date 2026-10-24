@@ -148,3 +148,12 @@
 @media(max-width:520px){.premium-shelf{margin-top:37px;padding-top:35px}.premium-card-content{padding:22px}.premium-card-illustration{min-height:145px}.premium-illustration-caption{left:25px;bottom:27px}}
 
 .admin-connect{margin-top:36px;padding:28px;border:1px solid #e2d7bd;border-radius:20px;background:#fcfaf4}.admin-connect>.eyebrow{color:#ad854b}.admin-connect h2{font:700 2rem Georgia,serif}.admin-connect>p{color:#647568;font-size:.87rem;max-width:760px}#cakto-product-settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:14px}#cakto-product-settings h3{font:700 1.25rem Georgia,serif}#cakto-product-settings label{display:block;font-size:.78rem;color:#49614e;margin-top:11px;font-weight:800}.admin-setting-input{width:100%;min-width:0;border:1px solid #c9d7cd;background:white;border-radius:10px;padding:12px;color:#133f2c;font-size:.8rem}#cakto-product-settings .outline-button{margin-top:15px;font-size:.78rem;width:100%}
+
+/* Produto 04 — guia de cópia e categorias dos modelos Canva */
+.canva-copy-guide{padding:17px 19px;border:1px solid #dacba8;border-radius:14px;background:linear-gradient(135deg,#fdf8ea,#f6f0df);color:#465c4a}
+.canva-copy-guide strong{display:block;color:#264d36;font-size:.94rem;margin-bottom:8px}
+.canva-copy-guide p{font-size:.82rem;line-height:1.65;margin:0}
+.canva-resource-group{min-width:0;margin-top:15px}
+.canva-resource-group h4{font-size:.77rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase;color:#9a783e;margin:0 0 12px;padding-bottom:10px;border-bottom:1px solid #ece6db}
+.canva-resource-list{display:grid;gap:10px}
+.canva-resource-list .resource-button{width:100%}
