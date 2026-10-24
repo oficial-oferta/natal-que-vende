@@ -20,7 +20,7 @@ window.NQV_CONFIG = {
   },
   CAMPAIGN_DEADLINE: "",
   ENABLE_COUNTDOWN: false,
-  PRODUCT_04_READY: false,
+  PRODUCT_04_READY: true,
   ENABLE_TESTIMONIALS: false,
   TESTIMONIALS: []
 };
