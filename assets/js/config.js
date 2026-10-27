@@ -9,7 +9,7 @@ window.NQV_CONFIG = {
   INSTALLMENTS_COUNT: 4,
   INSTALLMENTS_PRICE: "R$ 5,63", // Valor informado pelo proprietário a partir do checkout da Cakto em 23/10/2026.
   INSTALLMENTS_NOTE: "Total no cartão: R$ 22,52 em 4 parcelas de R$ 5,63. À vista: R$ 19,90. Parcelamento com acréscimo de R$ 2,62; confirme as condições no checkout.",
-  VIDEO_URL: "",
+  VIDEO_URL: "assets/video/natal-que-vende-vsl-v1-optimized.mp4",
   VIDEO_POSTER: "assets/images/mesa.webp",
   META_PIXEL_ID: "",
   SUPPORT_URL: "",
