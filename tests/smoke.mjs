@@ -36,6 +36,8 @@ try {
       moduleFourVisualPresent: !!document.querySelector('.preview-canva-kit .module-four-preview-art'),
       goalPresent: document.querySelector('#meta-10k')?.textContent?.includes('R$ 10.000'),
       heroBackground: getComputedStyle(document.querySelector('.hero-media')).backgroundImage,
+      goalDisclaimer: document.querySelector('.watch-goal-note')?.textContent || '',
+      firstFoldPaint: getComputedStyle(document.querySelector('.watch-intro')).opacity,
       installmentText: document.querySelector('[data-installments-label]')?.textContent?.trim(),
       cashText: document.querySelector('.offer-cash-price')?.textContent?.trim(),
       stickyText: document.querySelector('[data-sticky-price]')?.textContent?.trim(),
@@ -51,7 +53,7 @@ try {
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
     assert.equal(state.imagesBroken.length, 0, `Broken images at ${width}px: ${state.imagesBroken}`);
-    assert.ok(state.headline.includes('vender doces neste Natal'), 'Watch-first headline missing');
+    assert.ok(state.headline.includes('R$ 10.000') && state.headline.includes('faturamento'), 'Original R$10,000 revenue goal headline must remain visible');
     assert.ok(state.navPresent, 'Wordmark missing');
     assert.equal(state.previewCards, 7, 'Missing Product 04 carousel preview');
     assert.equal(state.moduleFourBuilt, true, 'Product 04 design inventory not reflected on site');
@@ -60,6 +62,8 @@ try {
     assert.equal(state.moduleFourVisualPresent, true, 'Product 04 visual showcase missing');
     assert.equal(state.goalPresent, true, 'Illustrative R$10K goal section missing');
     assert.ok(state.heroBackground.includes(width <= 640 ? 'mesa-mobile.webp' : 'mesa.webp'), 'Wrong responsive hero image at ' + width);
+    assert.equal(state.firstFoldPaint, '1', 'First-fold content must not wait for reveal animation');
+    assert.ok(state.goalDisclaimer.includes('não há vendas') || state.goalDisclaimer.includes('Não há vendas'), 'Revenue-goal disclaimer must be visible near main headline');
     assert.equal(state.installmentText, '4x de R$ 5,63 no cartão', 'Confirmed installment amount must match the Cakto checkout');
     assert.ok(state.cashText.includes('R$ 19,90'), 'Missing cash price');
     assert.ok(state.stickyText.includes('R$ 19,90'), 'Missing mobile sticky cash price');

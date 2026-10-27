@@ -817,3 +817,19 @@ section[id] {scroll-margin-top:90px;}
 .watch-native-play[hidden]{display:none!important}
 @media(max-width:640px){.watch-native-play{width:72px;height:72px}.watch-native-play span{font-size:24px}.watch-native-play small{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.watch-native-play{transition:none}}
+
+
+/* Prioridade à primeira dobra: texto e player não aguardam animação para pintar. */
+.hero-watch-first .watch-intro.reveal,
+.hero-watch-first .watch-player.reveal{opacity:1;transform:none;transition:none}
+.watch-goal-note{max-width:560px;color:rgba(255,241,214,.84);font-size:.76rem;line-height:1.45;margin:10px 0 0}
+@media(max-width:860px){
+  .watch-intro h1{font-size:clamp(2.25rem,5.75vw,3.35rem);line-height:1.07;margin:12px 0 11px}
+}
+@media(max-width:640px){
+  .watch-layout{padding-top:74px;gap:12px}
+  .watch-intro h1{font-size:clamp(1.88rem,7.15vw,2.28rem);line-height:1.08;letter-spacing:-.037em;margin:8px 0 8px}
+  .watch-lead{font-size:.82rem;line-height:1.4}
+  .watch-goal-note{font-size:.68rem;line-height:1.4;margin:7px 0 0}
+}
+@media(max-width:360px){.watch-intro h1{font-size:1.88rem}}
