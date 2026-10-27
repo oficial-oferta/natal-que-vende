@@ -833,3 +833,9 @@ section[id] {scroll-margin-top:90px;}
   .watch-goal-note{font-size:.68rem;line-height:1.4;margin:7px 0 0}
 }
 @media(max-width:360px){.watch-intro h1{font-size:1.88rem}}
+
+/* GA4 / Meta: consent preferences available on all screen sizes. */
+.footer-privacy-settings{padding:0;margin:4px 0 13px;border:0;background:none;color:#e6c883;text-align:left;font:inherit;font-size:.87rem;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.footer-privacy-settings:hover,.footer-privacy-settings:focus-visible{color:#fff2cc}
+.cookie-banner{z-index:200}
+.cookie-banner p{line-height:1.5}

@@ -218,37 +218,9 @@
     offerObserver.observe(offerSection);
   }
 
-  // Meta Pixel loads only after explicit consent and only when an ID exists.
-  const cookieBanner = qs('[data-cookie-banner]');
-  const consentAccept = qs('[data-consent-accept]');
-  const consentReject = qs('[data-consent-reject]');
-  const consentKey = 'nqv_tracking_consent';
+  // Consent, Google Analytics 4 and the optional Meta Pixel are managed by analytics.js.
+  // Both services stay disabled until the visitor explicitly agrees.
 
-  function installMetaPixel() {
-    if (!config.META_PIXEL_ID || window.fbq) return;
-    /* Meta Pixel bootstrap, kept dormant until a real ID and consent exist. */
-    !(function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)})(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    window.fbq('init', String(config.META_PIXEL_ID));
-    window.fbq('track', 'PageView');
-  }
-
-  if (config.META_PIXEL_ID && cookieBanner) {
-    const consent = localStorage.getItem(consentKey);
-    if (consent === 'granted') installMetaPixel();
-    else if (consent !== 'denied') cookieBanner.hidden = false;
-  }
-  if (consentAccept) consentAccept.addEventListener('click', () => {
-    localStorage.setItem(consentKey, 'granted');
-    if (cookieBanner) cookieBanner.hidden = true;
-    installMetaPixel();
-  });
-  if (consentReject) consentReject.addEventListener('click', () => {
-    localStorage.setItem(consentKey, 'denied');
-    if (cookieBanner) cookieBanner.hidden = true;
-  });
   // Large previews: accessible carousel with a full-size lightbox.
   const previewGallery = qs('[data-preview-gallery]');
   const previewCards = previewGallery ? qsa('.preview-card', previewGallery) : [];
