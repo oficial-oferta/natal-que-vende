@@ -43,7 +43,9 @@ try {
       checkoutDestination: window.NQV_CONFIG?.CHECKOUT_URL,
       checkoutButtons: document.querySelectorAll('.js-checkout').length,
       vslBeforeDetails: document.querySelector('#video')?.compareDocumentPosition(document.querySelector('#materiais')) & Node.DOCUMENT_POSITION_FOLLOWING,
-      playerAspect: (() => { const el=document.querySelector('[data-video-poster]');return el ? getComputedStyle(el).aspectRatio : '' })(),
+      playerAspect: (() => { const el=document.querySelector('[data-vsl-video]');return el ? getComputedStyle(el).aspectRatio : '' })(),
+      videoVisibleFromStart: (() => { const el=document.querySelector('[data-vsl-video]');return !!el && !!el.getClientRects().length && !el.hasAttribute('poster') && el.preload === 'metadata' })(),
+      noPhotoOverlay: !document.querySelector('[data-video-poster]'),
       vslPurchaseBelowVideo: (() => {const s=document.querySelector('#video');return !!s?.querySelector('.watch-checkout .js-checkout') && s.querySelector('.watch-checkout').getBoundingClientRect().top >= s.querySelector('.watch-player').getBoundingClientRect().bottom-1})(),
       moduleFourDisclosure: document.querySelector('.offer-pending')?.textContent?.trim()
     }));
@@ -66,6 +68,8 @@ try {
     assert.ok(state.checkoutButtons >= 4, 'All primary CTAs must be wired to same Cakto URL');
     assert.ok(state.vslBeforeDetails, 'VSL must appear before long-form page details');
     assert.equal(state.playerAspect, '9 / 16', 'Player must use a vertical VSL format');
+    assert.ok(state.videoVisibleFromStart, 'Native video must be visible without a photo poster');
+    assert.ok(state.noPhotoOverlay, 'No decorative image must cover the VSL');
     assert.ok(state.vslPurchaseBelowVideo, 'Checkout button must be immediately below video');
     assert.ok(state.moduleFourDisclosure?.includes('30 modelos'), 'Must clearly disclose Canva model delivery');
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
@@ -81,9 +85,11 @@ try {
       await page.locator('[data-lightbox-close]').click();
       assert.equal(await page.locator('[data-preview-lightbox]').evaluate(el => el.open), false, 'Preview dialog did not close');
       await page.locator('#video').scrollIntoViewIfNeeded();
+      assert.equal(await page.locator('[data-vsl-video]').count(), 1, 'Native video must exist on initial page load');
+      assert.ok((await page.locator('[data-vsl-video] source').getAttribute('src')).includes('natal-que-vende-vsl-v1-optimized.mp4#t=0.1'), 'Native source must reference the published VSL');
       await page.locator('[data-video-play]').click();
-      assert.ok((await page.locator('[data-video-frame] video source').getAttribute('src')).endsWith('/assets/video/natal-que-vende-vsl-v1-optimized.mp4'), 'Published VSL should load on click');
-      assert.equal(await page.locator('[data-video-frame] video').count(), 1, 'Video player must appear after click');
+      await page.waitForFunction(() => !document.querySelector('[data-vsl-video]').paused, null, { timeout: 15000 });
+      assert.equal(await page.locator('[data-video-play]').isVisible(), false, 'Play overlay must disappear when playback starts');
       // Mock ONLY the network response from the checkout to validate the browser navigation.
       // This does not simulate a successful payment or record a purchase.
       await page.route('https://pay.cakto.com.br/**', route => route.fulfill({

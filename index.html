@@ -23,9 +23,9 @@
   <link rel="preload" href="assets/images/mesa.webp" as="image" type="image/webp" media="(min-width: 641px)" fetchpriority="high">
   <link rel="preload" href="assets/images/mesa-mobile.webp" as="image" type="image/webp" media="(max-width: 640px)" fetchpriority="high">
   <link rel="preload" href="assets/images/logo-natal-que-vende-v2.webp" as="image" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/css/styles.css?v=watch-first-20261026">
+  <link rel="stylesheet" href="assets/css/styles.css?v=vsl-native-20261027">
   <script src="assets/js/config.js?v=vsl1" defer></script>
-  <script src="assets/js/app.js?v=vsl1" defer></script>
+  <script src="assets/js/app.js?v=vsl-native-20261027" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
@@ -62,17 +62,15 @@
         <div class="watch-conversion" id="video" aria-label="Vídeo de apresentação e compra do kit">
           <p class="watch-video-label">Assista para conhecer o método <span aria-hidden="true">↓</span></p>
         <div class="video-shell watch-player reveal" data-video-shell>
-          <div class="video-poster" data-video-poster role="img" aria-label="Capa da apresentação em vídeo do Natal que Vende">
-            <span class="video-badge">Apresentação do Natal que Vende</span>
-            <button class="video-play" type="button" data-video-play aria-label="Assistir à apresentação do Natal que Vende">
-              <span aria-hidden="true">▶</span>
+          <div class="video-frame watch-native-frame" data-video-frame>
+            <video class="watch-native-video" data-vsl-video controls playsinline preload="metadata" aria-label="Apresentação do Natal que Vende">
+              <source src="assets/video/natal-que-vende-vsl-v1-optimized.mp4#t=0.1" type="video/mp4">
+              Seu navegador não suporta a reprodução deste vídeo.
+            </video>
+            <button class="watch-native-play" type="button" data-video-play aria-label="Reproduzir apresentação do Natal que Vende">
+              <span aria-hidden="true">▶</span><small>ASSISTIR</small>
             </button>
-            <div class="video-poster-copy">
-              <strong>Seu Natal pode começar com um plano.</strong>
-              <span>Assista à VSL e conheça o kit completo para começar a planejar suas encomendas.</span>
-            </div>
           </div>
-          <div class="video-frame" data-video-frame hidden></div>
         </div>
           <div class="watch-checkout">
             <button class="button button-gold button-large button-full js-checkout" type="button">Quero receber meu kit por R$ 19,90 <span aria-hidden="true">→</span></button>

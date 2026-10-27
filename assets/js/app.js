@@ -125,58 +125,35 @@
     });
   });
 
-  // Video component: no broken player when URL is absent.
+  // Show the actual video in the first screen, with native controls and no poster image.
+  // Only video metadata is preloaded; playback begins from the visitor's click.
+  const inlineVsl = qs('[data-vsl-video]');
   const videoPlay = qs('[data-video-play]');
-  const videoPoster = qs('[data-video-poster]');
-  const videoFrame = qs('[data-video-frame]');
-  if (videoPoster && config.VIDEO_POSTER) videoPoster.style.backgroundImage = `linear-gradient(180deg, rgba(3,28,20,.14), rgba(3,28,20,.78)), url("${config.VIDEO_POSTER}")`;
-
-  function normalizeVideoUrl(raw) {
-    if (!raw) return '';
-    try {
-      const url = new URL(raw, window.location.href);
-      if (url.hostname.includes('youtube.com')) {
-        const id = url.searchParams.get('v');
-        return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0` : '';
+  if (inlineVsl) {
+    const source = inlineVsl.querySelector('source');
+    const configuredVideo = String(config.VIDEO_URL || '');
+    if (source && configuredVideo && configuredVideo.endsWith('.mp4')) {
+      const desired = configuredVideo + '#t=0.1';
+      if (source.getAttribute('src') !== desired) {
+        source.src = desired;
+        inlineVsl.load();
       }
-      if (url.hostname === 'youtu.be') {
-        const id = url.pathname.replace('/', '');
-        return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0` : '';
-      }
-      if (url.hostname.includes('vimeo.com')) {
-        const id = url.pathname.split('/').filter(Boolean).pop();
-        return id ? `https://player.vimeo.com/video/${encodeURIComponent(id)}` : '';
-      }
-      if (url.origin === window.location.origin && url.pathname.endsWith('.mp4')) return url.pathname.replace(/^\/natal-que-vende\//, '');
-      return '';
-    } catch { return ''; }
-  }
-
-  if (videoPlay) {
-    videoPlay.addEventListener('click', () => {
-      const src = normalizeVideoUrl(config.VIDEO_URL);
-      if (!src) {
-        showToast('O vídeo oficial ainda está em produção. A área já está pronta para receber o link.');
-        return;
-      }
-      if (src.endsWith('.mp4')) {
-        const video = document.createElement('video');
-        video.controls = true;
-        video.playsInline = true;
-        video.autoplay = true;
-        video.preload = 'none';
-        video.style.cssText = 'display:block;width:100%;height:100%;object-fit:contain;background:#000';
-        const source = document.createElement('source');
-        source.src = src;
-        source.type = 'video/mp4';
-        video.appendChild(source);
-        videoFrame.replaceChildren(video);
-      } else {
-      videoFrame.innerHTML = `<iframe src="${src}" title="Vídeo demonstrativo do Natal que Vende" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
-      }
-      videoPoster.hidden = true;
-      videoFrame.hidden = false;
-    });
+    }
+    const syncPlaybackButton = () => {
+      if (videoPlay) videoPlay.hidden = !inlineVsl.paused || inlineVsl.ended;
+    };
+    if (videoPlay) {
+      videoPlay.addEventListener('click', () => {
+        const requested = inlineVsl.play();
+        if (requested && typeof requested.catch === 'function') {
+          requested.catch(() => { inlineVsl.controls = true; syncPlaybackButton(); });
+        }
+      });
+    }
+    inlineVsl.addEventListener('play', syncPlaybackButton);
+    inlineVsl.addEventListener('pause', syncPlaybackButton);
+    inlineVsl.addEventListener('ended', () => { if (videoPlay) videoPlay.hidden = false; });
+    syncPlaybackButton();
   }
 
   // Product 04: visual stays available but remains explicitly pending until configured.
