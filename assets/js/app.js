@@ -134,7 +134,7 @@
   function normalizeVideoUrl(raw) {
     if (!raw) return '';
     try {
-      const url = new URL(raw);
+      const url = new URL(raw, window.location.href);
       if (url.hostname.includes('youtube.com')) {
         const id = url.searchParams.get('v');
         return id ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(id)}?rel=0` : '';
