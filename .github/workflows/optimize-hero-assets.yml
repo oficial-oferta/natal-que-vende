@@ -55,6 +55,27 @@ jobs:
                           print(f"UNCHANGED {name}: {original_bytes} -> {new_bytes} bytes, average channel delta {mean_error:.2f}")
                   finally:
                       temp_path.unlink(missing_ok=True)
+          # Keep the full 256 x 256 icon required by the web manifest.
+          # Palette optimization changes only PNG encoding, not dimensions.
+          favicon = Path("assets/images/favicon.png")
+          original_size = favicon.stat().st_size
+          with Image.open(favicon) as original:
+              full_color = original.convert("RGBA")
+              with NamedTemporaryFile(suffix=".png", delete=False) as candidate_file:
+                  candidate_path = Path(candidate_file.name)
+              try:
+                  full_color.quantize(colors=224, method=Image.Quantize.FASTOCTREE, dither=Image.Dither.NONE).save(candidate_path, format="PNG", optimize=True, compress_level=9)
+                  with Image.open(candidate_path) as new_icon:
+                      channel_errors = ImageStat.Stat(ImageChops.difference(full_color, new_icon.convert("RGBA"))).mean
+                      size_ok = new_icon.size == original.size
+                  saved_size = candidate_path.stat().st_size
+                  if size_ok and saved_size < original_size * .8 and max(channel_errors[:3]) < 6 and channel_errors[3] < 4:
+                      favicon.write_bytes(candidate_path.read_bytes())
+                      print(f"OPTIMIZED favicon.png: {original_size} -> {saved_size} bytes (256px preserved)")
+                  else:
+                      print(f"UNCHANGED favicon.png: {original_size} -> {saved_size} bytes, color delta {channel_errors}")
+              finally:
+                  candidate_path.unlink(missing_ok=True)
           PY
       - name: Commit optimized existing photos if meaningful
         shell: bash
@@ -65,6 +86,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- assets/images/mesa.webp assets/images/mesa-mobile.webp assets/images/chocotone.webp assets/images/brigadeiros.webp assets/images/biscoitos.webp assets/images/brownie.webp assets/images/cupcakes.webp
+          git add -- assets/images/mesa.webp assets/images/mesa-mobile.webp assets/images/chocotone.webp assets/images/brigadeiros.webp assets/images/biscoitos.webp assets/images/brownie.webp assets/images/cupcakes.webp assets/images/favicon.png
           git commit -m "perf: reduce image transfer with visually similar WebP encoding"
           git push origin HEAD:main
