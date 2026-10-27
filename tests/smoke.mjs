@@ -23,6 +23,9 @@ try {
     const page = await browser.newPage({ viewport: { width, height: 850 }, reducedMotion: 'reduce' });
     const pageErrors = [];
     page.on('pageerror', error => pageErrors.push(error.message));
+    // Local stub prevents analytics traffic from CI from polluting real reports.
+    await page.route('https://www.googletagmanager.com/**', route =>
+      route.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
     await page.goto('http://127.0.0.1:8765/', { waitUntil: 'networkidle' });
     const state = await page.evaluate(() => ({
       horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth + 1,
@@ -50,9 +53,9 @@ try {
       noPhotoOverlay: !document.querySelector('[data-video-poster]'),
       vslPurchaseBelowVideo: (() => {const s=document.querySelector('#video');return !!s?.querySelector('.watch-checkout .js-checkout') && s.querySelector('.watch-checkout').getBoundingClientRect().top >= s.querySelector('.watch-player').getBoundingClientRect().bottom-1})(),
       ga4Id: window.NQV_CONFIG?.GA4_MEASUREMENT_ID,
-      bannerPresent: !!document.querySelector('[data-cookie-banner]'),
-      ga4AbsentWithoutConsent: !document.querySelector('[data-ga4-script]'),
-      settingsVisible: !!document.querySelector('[data-open-cookie-preferences]'),
+      bannerAbsent: !document.querySelector('[data-cookie-banner]'),
+      tagVisibleInHead: !!document.querySelector('head script[src*="googletagmanager.com/gtag/js?id=G-68Y43D2QHK"]'),
+      ga4Config: Array.from(window.dataLayer || []).some(row => row[0] === 'config' && row[1] === 'G-68Y43D2QHK'),
       moduleFourDisclosure: document.querySelector('.offer-pending')?.textContent?.trim()
     }));
     assert.equal(state.horizontalOverflow, false, `Horizontal overflow at ${width}px`);
@@ -74,7 +77,7 @@ try {
     assert.ok(state.installmentDisclosure.includes('R$ 22,52') && state.installmentDisclosure.includes('R$ 19,90') && state.installmentDisclosure.includes('R$ 2,62'), 'Missing total financed, cash price or added installment cost');
     assert.equal(state.checkoutDestination, 'https://pay.cakto.com.br/5ymryom_1235383', 'Official Cakto checkout must be configured');
     assert.equal(state.ga4Id, 'G-68Y43D2QHK', 'GA4 property must be configured correctly');
-    assert.ok(state.bannerPresent && state.ga4AbsentWithoutConsent && state.settingsVisible, 'Tracking must require consent and offer preferences');
+    assert.ok(state.bannerAbsent && state.tagVisibleInHead && state.ga4Config, 'GA4 must initialize automatically without a cookie pop-up');
     assert.ok(state.checkoutButtons >= 4, 'All primary CTAs must be wired to same Cakto URL');
     assert.ok(state.vslBeforeDetails, 'VSL must appear before long-form page details');
     assert.equal(state.playerAspect, '9 / 16', 'Player must use a vertical VSL format');
@@ -83,23 +86,14 @@ try {
     assert.ok(state.vslPurchaseBelowVideo, 'Checkout button must be immediately below video');
     assert.ok(state.moduleFourDisclosure?.includes('30 modelos'), 'Must clearly disclose Canva model delivery');
     assert.equal(pageErrors.length, 0, `JS errors at ${width}px: ${pageErrors}`);
-    // Opt-in test uses a local stub: no traffic is sent to the actual GA4 property.
-    await page.route('https://www.googletagmanager.com/**', route =>
-      route.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
+    // Verify Portuguese event names without sending test traffic to GA4.
     if (width === 390) {
-      await page.locator('[data-consent-accept]').click();
-      await page.waitForFunction(() => !!document.querySelector('[data-ga4-script]'));
-      assert.equal(await page.evaluate(() => window.NQV_ANALYTICS.consentimento()), true);
-      assert.ok(await page.evaluate(() => window.dataLayer.some(row => row[0] === 'config' && row[1] === 'G-68Y43D2QHK')), 'GA4 config not initialized');
       await page.evaluate(() => {
         document.querySelector('[data-vsl-video]').dispatchEvent(new Event('play'));
         window.NQV_ANALYTICS.registrar('teste_integracao_local');
       });
       assert.ok(await page.evaluate(() => window.dataLayer.some(row => row[0] === 'event' && row[1] === 'video_iniciado')), 'Video start event missing');
       assert.ok(await page.evaluate(() => window.dataLayer.some(row => row[0] === 'event' && row[1] === 'teste_integracao_local')), 'Portuguese event missing');
-    } else {
-      await page.locator('[data-consent-reject]').click();
-      assert.equal(await page.evaluate(() => !!document.querySelector('[data-ga4-script]')), false, 'Refusal should not load GA4');
     }
     if (width === 390 || width === 1440) {
       await page.locator('#previas').scrollIntoViewIfNeeded();

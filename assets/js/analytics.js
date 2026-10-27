@@ -1,98 +1,27 @@
-/* Natal que Vende — mensuração de eventos em português (GA4).
- * Consentimento básico: nenhuma tag de análise é carregada antes do aceite.
- * Não enviamos dados pessoais de compradoras, e-mail ou valores de compras fictícias.
+/* Natal que Vende — GA4: tag padrão instalada no cabeçalho.
+ * Os eventos de interação permanecem em português.
+ * A tag é inicializada uma vez por visita, sem pop-up de cookies.
  */
 (() => {
   'use strict';
-
   const cfg = window.NQV_CONFIG || {};
   const gaId = String(cfg.GA4_MEASUREMENT_ID || '').trim();
-  const pixelId = String(cfg.META_PIXEL_ID || '').trim();
-  const banner = document.querySelector('[data-cookie-banner]');
-  const allow = document.querySelector('[data-consent-accept]');
-  const deny = document.querySelector('[data-consent-reject]');
-  const preferences = document.querySelector('[data-open-cookie-preferences]');
-  const storageKey = 'nqv_tracking_consent';
-  let consented = false;
-  let gaReady = false;
 
-  const getSavedConsent = () => {
-    try { return localStorage.getItem(storageKey); } catch { return null; }
-  };
-  const saveConsent = (value) => {
-    try { localStorage.setItem(storageKey, value); } catch { /* navegador restrito */ }
-  };
-  const showBanner = () => { if (banner) banner.hidden = false; };
-  const hideBanner = () => { if (banner) banner.hidden = true; };
-
-  function startGoogleAnalytics() {
-    if (!gaId || gaReady) return;
-    gaReady = true;
-    window.dataLayer = window.dataLayer || [];
-    window.gtag = function () { window.dataLayer.push(arguments); };
-    // Consent Mode v2 — apenas analytics_storage; publicidade segue negada.
-    window.gtag('consent', 'default', {
-      ad_storage: 'denied', ad_user_data: 'denied',
-      ad_personalization: 'denied', analytics_storage: 'denied'
-    });
+  // google tag (gtag.js) carregado async no <head>, sem bloquear a renderização.
+  window.dataLayer = window.dataLayer || [];
+  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
+  if (gaId) {
     window.gtag('js', new Date());
-    window.gtag('consent', 'update', { analytics_storage: 'granted' });
     window.gtag('config', gaId, { send_page_view: true });
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = 'https://www.googletagmanager.com/gtag/js?id=' + encodeURIComponent(gaId);
-    script.setAttribute('data-ga4-script', '');
-    document.head.appendChild(script);
-  }
-
-  function startMetaPixel() {
-    if (!pixelId || typeof window.fbq === 'function') return;
-    !(function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)})
-    (window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    window.fbq('init', pixelId);
-    window.fbq('track', 'PageView');
   }
 
   function track(name, data = {}) {
-    if (!consented || !gaId || !gaReady || typeof window.gtag !== 'function') return;
-    // Event names: Portuguese without accents/spaces, per GA4 naming rules.
+    if (!gaId || typeof window.gtag !== 'function') return;
     window.gtag('event', name, {
       ...data,
       origem_pagina: 'pagina_de_vendas',
       transport_type: 'beacon'
     });
-  }
-
-  function grant() {
-    consented = true;
-    saveConsent('granted');
-    hideBanner();
-    startGoogleAnalytics();
-    startMetaPixel();
-    track('consentimento_aceito');
-  }
-
-  function reject() {
-    consented = false;
-    saveConsent('denied');
-    hideBanner();
-    // Se houver mudança de ideia após um aceite na mesma aba, interromper
-    // novos eventos; a nova escolha fica em vigor ao recarregar a página.
-    if (typeof window.gtag === 'function') {
-      window.gtag('consent', 'update', { analytics_storage: 'denied' });
-    }
-  }
-
-  if (allow) allow.addEventListener('click', grant);
-  if (deny) deny.addEventListener('click', reject);
-  if (preferences) preferences.addEventListener('click', showBanner);
-  if (gaId || pixelId) {
-    const saved = getSavedConsent();
-    if (saved === 'granted') grant();
-    else if (saved !== 'denied') showBanner();
   }
 
   // Não interfere no redirecionamento para a Cakto.
@@ -122,7 +51,7 @@
     });
     const once = (name, data = {}) => {
       if (sent.has(name)) return;
-      if (!consented) return;
+      
       sent.add(name);
       track(name, { ...videoData(), ...data });
     };
@@ -134,7 +63,7 @@
     });
     video.addEventListener('seeking', () => { lastTime = null; });
     video.addEventListener('timeupdate', () => {
-      if (!started || video.seeking || video.paused || !consented) return;
+      if (!started || video.seeking || video.paused) return;
       const position = Number(video.currentTime) || 0;
       if (lastTime !== null && position >= lastTime && position - lastTime <= 2) {
         watchedSeconds += position - lastTime;
@@ -150,7 +79,7 @@
       }
     });
     video.addEventListener('pause', () => {
-      if (!started || completed || video.ended || video.seeking || !consented) return;
+      if (!started || completed || video.ended || video.seeking) return;
       if (Number(video.currentTime) > 1 && pauseCount < 5) {
         pauseCount++;
         track('video_pausado', { ...videoData(), quantidade_pausas: pauseCount });
@@ -170,7 +99,7 @@
       observer.observe(video);
     }
     window.addEventListener('pagehide', () => {
-      if (started && !completed && consented) {
+      if (started && !completed) {
         once('video_abandonado');
       }
     });
@@ -180,7 +109,7 @@
   let visibleSeconds = 0;
   const dwell = new Set();
   if (gaId) window.setInterval(() => {
-    if (!consented || document.hidden) return;
+    if (document.hidden) return;
     visibleSeconds++;
     for (const milestone of [30, 60, 120]) {
       if (visibleSeconds >= milestone && !dwell.has(milestone)) {
@@ -194,7 +123,7 @@
   let scrollScheduled = false;
   const checkScroll = () => {
     scrollScheduled = false;
-    if (!consented || document.hidden) return;
+    if (document.hidden) return;
     const full = Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
     const available = Math.max(1, full - window.innerHeight);
     const percent = Math.round((window.scrollY / available) * 100);
@@ -215,7 +144,7 @@
   if (offer && 'IntersectionObserver' in window) {
     let offerSent = false;
     const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && consented && !offerSent) {
+      if (entry.isIntersecting && !offerSent) {
         offerSent = true;
         track('oferta_visualizada');
         observer.disconnect();
@@ -226,8 +155,8 @@
 
   // Apoio de diagnóstico no console do navegador; não envia eventos fictícios.
   window.NQV_ANALYTICS = Object.freeze({
-    medicacao: gaId,
-    consentimento: () => consented,
+    medicao: gaId,
+    ativo: () => Boolean(gaId),
     registrar: track
   });
 })();
