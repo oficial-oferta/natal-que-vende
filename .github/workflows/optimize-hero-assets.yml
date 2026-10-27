@@ -1,0 +1,70 @@
+name: Optimize landing images (safe on-demand)
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/optimize-hero-assets.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Install optimized WebP encoder
+        run: python3 -m pip install --quiet pillow
+      - name: Recompress existing WebP photos only when size and fidelity improve
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageChops, ImageStat
+          from tempfile import NamedTemporaryFile
+          import os
+          photos = [
+              ("mesa.webp", 76, 10.0),
+              ("mesa-mobile.webp", 76, 10.0),
+              ("chocotone.webp", 82, 7.0),
+              ("brigadeiros.webp", 82, 7.0),
+              ("biscoitos.webp", 82, 7.0),
+              ("brownie.webp", 82, 7.0),
+              ("cupcakes.webp", 82, 7.0),
+          ]
+          for name, quality, max_error in photos:
+              source = Path("assets/images") / name
+              original_bytes = source.stat().st_size
+              with Image.open(source) as input_image:
+                  image = input_image.convert("RGBA" if "A" in input_image.getbands() else "RGB")
+                  with NamedTemporaryFile(suffix=".webp", delete=False) as temp_file:
+                      temp_path = Path(temp_file.name)
+                  try:
+                      image.save(temp_path, format="WEBP", quality=quality, method=6)
+                      new_bytes = temp_path.stat().st_size
+                      with Image.open(temp_path) as rebuilt:
+                          diff = ImageChops.difference(image.convert("RGB"), rebuilt.convert("RGB"))
+                          mean_error = sum(ImageStat.Stat(diff).mean) / 3
+                          dimensions_ok = rebuilt.size == image.size
+                      if new_bytes <= original_bytes * .90 and mean_error <= max_error and dimensions_ok:
+                          source.write_bytes(temp_path.read_bytes())
+                          print(f"OPTIMIZED {name}: {original_bytes} -> {new_bytes} bytes, average channel delta {mean_error:.2f}")
+                      else:
+                          print(f"UNCHANGED {name}: {original_bytes} -> {new_bytes} bytes, average channel delta {mean_error:.2f}")
+                  finally:
+                      temp_path.unlink(missing_ok=True)
+          PY
+      - name: Commit optimized existing photos if meaningful
+        shell: bash
+        run: |
+          if git diff --quiet -- assets/images; then
+            echo "No qualified image savings, originals preserved."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- assets/images/mesa.webp assets/images/mesa-mobile.webp assets/images/chocotone.webp assets/images/brigadeiros.webp assets/images/biscoitos.webp assets/images/brownie.webp assets/images/cupcakes.webp
+          git commit -m "perf: reduce image transfer with visually similar WebP encoding"
+          git push origin HEAD:main
