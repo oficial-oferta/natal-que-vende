@@ -147,6 +147,7 @@
         const id = url.pathname.split('/').filter(Boolean).pop();
         return id ? `https://player.vimeo.com/video/${encodeURIComponent(id)}` : '';
       }
+      if (url.origin === window.location.origin && url.pathname.endsWith('.mp4')) return url.pathname.replace(/^\/natal-que-vende\//, '');
       return '';
     } catch { return ''; }
   }
@@ -158,7 +159,21 @@
         showToast('O vídeo oficial ainda está em produção. A área já está pronta para receber o link.');
         return;
       }
+      if (src.endsWith('.mp4')) {
+        const video = document.createElement('video');
+        video.controls = true;
+        video.playsInline = true;
+        video.autoplay = true;
+        video.preload = 'none';
+        video.style.cssText = 'display:block;width:100%;height:100%;object-fit:contain;background:#000';
+        const source = document.createElement('source');
+        source.src = src;
+        source.type = 'video/mp4';
+        video.appendChild(source);
+        videoFrame.replaceChildren(video);
+      } else {
       videoFrame.innerHTML = `<iframe src="${src}" title="Vídeo demonstrativo do Natal que Vende" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+      }
       videoPoster.hidden = true;
       videoFrame.hidden = false;
     });
