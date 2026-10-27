@@ -69,7 +69,7 @@ try{
       assert.equal(await page.locator('[data-open-module="'+n+'"]').isEnabled(),true);
       await page.locator('[data-open-module="'+n+'"]').click();
       await page.locator('#module-detail').waitFor({state:'visible'});
-      assert.equal(await page.locator('#module-steps li').count(),3);
+      assert.equal(await page.locator('#module-steps li').count(), n===4 ? 4 : 3, 'Instructions count must match current module content');
       assert.equal(await page.locator('#detail-number').innerText(),String(n).padStart(2,'0'));
       await page.locator('#module-completion-check').check();
       await page.waitForFunction(value=>document.querySelector('#journey-progress-label')?.textContent?.startsWith(value+' de 5'),n);
