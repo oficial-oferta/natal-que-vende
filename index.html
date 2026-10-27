@@ -23,7 +23,7 @@
   <link rel="preload" href="assets/images/mesa.webp" as="image" type="image/webp" media="(min-width: 641px)" fetchpriority="high">
   <link rel="preload" href="assets/images/mesa-mobile.webp" as="image" type="image/webp" media="(max-width: 640px)" fetchpriority="high">
   <link rel="preload" href="assets/images/logo-natal-que-vende-v2.webp" as="image" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/styles.css?v=watch-first-20261026">
   <script src="assets/js/config.js" defer></script>
   <script src="assets/js/app.js" defer></script>
 </head>
@@ -47,21 +47,56 @@
   </header>
 
   <main id="conteudo">
-    <section class="hero" id="topo" aria-labelledby="hero-title">
+
+    <section class="hero hero-watch-first" id="topo" aria-labelledby="hero-title">
+      <div class="hero-media" aria-hidden="true"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
+      <div class="container watch-layout">
+        <div class="watch-intro reveal">
+          <div class="eyebrow"><span></span> Natal 2026 · Comece por aqui</div>
+          <h1 id="hero-title">Seu primeiro passo para <em>vender doces neste Natal.</em></h1>
+          <p class="watch-lead">Assista à apresentação e descubra como o kit reúne receitas, divulgação e controle de encomendas em um passo a passo para iniciantes.</p>
+          <div class="watch-highlights" aria-label="Destaques do produto"><span>5 doces natalinos</span><span>30 modelos de divulgação</span><span>Planilha de lucro</span></div>
+        </div>
+        <div class="watch-conversion" id="video" aria-label="Vídeo de apresentação e compra do kit">
+          <p class="watch-video-label">Assista para conhecer o método <span aria-hidden="true">↓</span></p>
+        <div class="video-shell watch-player reveal" data-video-shell>
+          <div class="video-poster" data-video-poster role="img" aria-label="Espaço reservado para a apresentação em vídeo do Natal que Vende">
+            <span class="video-badge">Apresentação do Natal que Vende</span>
+            <button class="video-play" type="button" data-video-play aria-label="Assistir à apresentação do Natal que Vende">
+              <span aria-hidden="true">▶</span>
+            </button>
+            <div class="video-poster-copy">
+              <strong>Seu Natal pode começar com um plano.</strong>
+              <span>A apresentação completa está em edição. Em breve você poderá assistir aqui.</span>
+            </div>
+          </div>
+          <div class="video-frame" data-video-frame hidden></div>
+        </div>
+          <div class="watch-checkout">
+            <button class="button button-gold button-large button-full js-checkout" type="button">Quero receber meu kit por R$ 19,90 <span aria-hidden="true">→</span></button>
+            <p class="watch-checkout-note">Material digital · Acesso por e-mail após pagamento aprovado.<br>Preço à vista; taxas adicionais, se houver, são exibidas no checkout.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="hero hero-details" id="materiais" aria-labelledby="details-title">
       <div class="hero-media" aria-hidden="true"></div>
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-glow hero-glow-one" aria-hidden="true"></div>
       <div class="hero-glow hero-glow-two" aria-hidden="true"></div>
       <div class="container hero-grid">
         <div class="hero-copy reveal">
-          <img class="hero-logo" src="assets/images/logo-natal-que-vende-v2.webp" alt="Natal que Vende" width="200" height="200" fetchpriority="high" decoding="async">
-          <div class="eyebrow"><span></span> Natal 2026 • conteúdo digital</div>
-          <h1 id="hero-title">Descubra o método para buscar <em>até R$ 10.000</em> em faturamento com encomendas neste Natal.</h1>
+          <img class="hero-logo" loading="lazy" src="assets/images/logo-natal-que-vende-v2.webp" alt="Natal que Vende" width="200" height="200" fetchpriority="high" decoding="async">
+          <div class="eyebrow"><span></span> Por dentro do kit · edição 2026</div>
+          <h2 id="details-title" class="details-title">Tudo que você precisa conhecer sobre o <em>Natal que Vende.</em></h2>
           <p class="hero-lead">O Natal que Vende reúne 5 doces natalinos, o Método 5P, orientações para conseguir encomendas, materiais de divulgação e uma planilha para acompanhar custos, pedidos e pagamentos.</p>
           <p class="goal-disclaimer">*R$ 10 mil é uma meta ilustrativa de faturamento bruto (antes dos custos), não lucro ou ganho garantido. O resultado depende da procura, capacidade de produção, preços, divulgação e execução.</p>
           <div class="hero-actions">
-            <button class="button button-gold button-large js-checkout" type="button">Quero conhecer o kit <span aria-hidden="true">→</span></button>
-            <a class="button button-ghost button-large" href="#video">Ver como funciona</a>
+            <button class="button button-gold button-large js-checkout" type="button">Quero meu kit <span aria-hidden="true">→</span></button>
+            <a class="button button-ghost button-large" href="#video">Ver apresentação</a>
           </div>
           <ul class="hero-proof" aria-label="Destaques do kit">
             <li><strong>5</strong><span>produtos natalinos</span></li>
@@ -93,32 +128,6 @@
         </div>
       </div>
       <div class="hero-edge" aria-hidden="true"></div>
-    </section>
-
-    <section class="section video-section" id="video" aria-labelledby="video-title">
-      <div class="container narrow">
-        <div class="section-heading center reveal">
-          <span class="section-kicker">Descubra o caminho</span>
-          <h2 id="video-title">Veja como organizar sua estratégia para buscar até R$ 10 mil em encomendas neste Natal.</h2>
-          <p>O vídeo vai mostrar como escolher seus produtos, montar um cardápio, calcular preços, divulgar e acompanhar pedidos com os cinco módulos. Enquanto a apresentação oficial é finalizada, explore as prévias reais logo abaixo.</p>
-        </div>
-        <div class="video-shell reveal" data-video-shell>
-          <div class="video-poster" data-video-poster role="img" aria-label="Prévia do vídeo demonstrativo do Natal que Vende">
-            <span class="video-badge">Vídeo demonstrativo</span>
-            <button class="video-play" type="button" data-video-play aria-label="Reproduzir vídeo demonstrativo">
-              <span aria-hidden="true">▶</span>
-            </button>
-            <div class="video-poster-copy">
-              <strong>A meta é sua. O plano começa aqui.</strong>
-              <span>Em breve: vídeo com o Método 5P, os cinco módulos e um exemplo de meta de faturamento.</span>
-            </div>
-          </div>
-          <div class="video-frame" data-video-frame hidden></div>
-        </div>
-        <div class="center section-cta reveal">
-          <button class="button button-pine button-large js-checkout" type="button">Quero conhecer os cinco módulos <span aria-hidden="true">→</span></button>
-        </div>
-      </div>
     </section>
 
     <section class="section opportunity" aria-labelledby="opportunity-title">
