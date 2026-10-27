@@ -82,7 +82,8 @@ try {
       assert.equal(await page.locator('[data-preview-lightbox]').evaluate(el => el.open), false, 'Preview dialog did not close');
       await page.locator('#video').scrollIntoViewIfNeeded();
       await page.locator('[data-video-play]').click();
-      assert.ok((await page.locator('[data-toast]').textContent()).includes('em produção'), 'Missing video placeholder message');
+      assert.equal(await page.locator('[data-video-frame] video source').getAttribute('src'), 'assets/video/natal-que-vende-vsl-v1-optimized.mp4', 'Published VSL should load on click');
+      assert.equal(await page.locator('[data-video-frame] video').count(), 1, 'Video player must appear after click');
       // Mock ONLY the network response from the checkout to validate the browser navigation.
       // This does not simulate a successful payment or record a purchase.
       await page.route('https://pay.cakto.com.br/**', route => route.fulfill({
